@@ -1,2 +1,2 @@
-praktikum
-=========
+Praktikum Neural Networks
+=========================
