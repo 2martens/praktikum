@@ -14,12 +14,12 @@ class SingleLayerNetwork(object):
         super(SingleLayerNetwork, self).__init__()
         self._weights = start_weights
 
-    def _transfer_function(self, value):
+    def _activation_function(self, value):
         return 0 if value < 0 else 1
 
     def calc(self, input):
         result = np.dot(self._weights, input)
-        return self._transfer_function(result)
+        return self._activation_function(result)
 
     def train(self, input, expected):
         error = expected - self.calc(input)
