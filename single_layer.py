@@ -26,6 +26,7 @@ class SingleLayerNetwork(object):
     def train(self, input, expected):
         error = np.add(expected, -self.calc(input))
         error = np.array(list(map(lambda x: [x], error)))
+        print(error)
 
         correctionValues = np.multiply(
             np.multiply(self.learnFactor, error), input)
@@ -36,14 +37,14 @@ if __name__ == '__main__':
     # Logisches ODER
     # (input1, input2, dummyData), result
     training_data = [
-        (np.array([0, 0, 1]), [0, 0]),
-        (np.array([0, 1, 1]), [0, 1]),
-        (np.array([1, 0, 1]), [0, 1]),
-        (np.array([1, 1, 1]), [1, 1]),
+        (np.array([0, 0, 1]), [0]),
+        (np.array([0, 1, 1]), [1]),
+        (np.array([1, 0, 1]), [1]),
+        (np.array([1, 1, 1]), [0]),
     ]
 
-    number_of_runs = 1000
-    network = SingleLayerNetwork(np.random.rand(2, 3))
+    number_of_runs = 100
+    network = SingleLayerNetwork(np.random.rand(3))
 
     # train network
     for i in range(number_of_runs):
