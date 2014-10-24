@@ -2,6 +2,7 @@ from multi_layer import MultiLayerNetwork
 from world import world_digits
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def print_image(img_data, row_len=8):
@@ -36,19 +37,36 @@ if __name__ == '__main__':
         transfer_function = MultiLayerNetwork.sigmoid_function,
         last_transfer_function = MultiLayerNetwork.step_function)
 
-    for cycles in range(100):
-        digits.newinit()
-        for i in range(number_of_digits):
-            inputs = digits.sensor()
-            expected = np.zeros(number_of_digits)
-            expected[i] = 1
+    # create data and result array for training
+    training_data = []
+    digits.newinit()
+    for i in range(number_of_digits):
+        expected = np.zeros(number_of_digits)
+        expected[i] = 1
+        data_set = [digits.sensor(), expected]
+        training_data.append(data_set)
+        digits.act()
 
-            err = network.train(inputs, expected)
+    # for cycles in range(100):
+    #     digits.newinit()
+    #     for i in range(number_of_digits):
+    #         inputs = digits.sensor()
+    #         expected = np.zeros(number_of_digits)
+    #         expected[i] = 1
 
-            # print("train inp: {} expected: {} error: {}".format(
-            #     inputs, expected, err))
-            digits.act()
+    #         err = network.train(inputs, expected)
 
+    # print("train inp: {} expected: {} error: {}".format(
+    # inputs, expected, err))
+    #         digits.act()
+
+    errors = network.train_until_fit(
+        training_data=training_data,
+        train_steps=500,
+        learn_rate=0.2,
+        max_trains=500000)
+
+    # check results
     digits.newinit()
     for i in range(number_of_digits):
         inputs = digits.sensor()
@@ -60,3 +78,6 @@ if __name__ == '__main__':
         digits.act()
 
         print("result: {}".format(interpret_result(result)))
+
+    plt.plot(errors)
+    plt.show()

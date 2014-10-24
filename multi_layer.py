@@ -137,7 +137,7 @@ class MultiLayerNetwork(object):
         """
         for data, expected in training_data:
             result = self.calc(data)
-            if result != expected:
+            if not np.array_equal(result, expected):
                 return False
 
         return True
@@ -156,7 +156,7 @@ class MultiLayerNetwork(object):
         errors = []
         trains = 0
         while not self.all_pass(training_data):
-            if trains > 0 and trains % 1000 == 0:
+            if trains > 0 and trains % train_steps == 0:
                 print("failed on {} trains with error {}"
                       .format(trains, errors[-1]))
                 if max_trains != 0 and trains >= max_trains:
