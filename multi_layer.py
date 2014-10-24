@@ -198,7 +198,7 @@ if __name__ == '__main__':
 
     for data, __ in training_data:
         result = network.calc(data)
-        print("{} -> {}".format(data[:2], result))
+        print("{} -> {}".format(data, result))
 
     plt.plot(errors)
     plt.show()
