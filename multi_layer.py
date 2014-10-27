@@ -1,7 +1,6 @@
 """ Multi Layer Perceptron """
 
 import numpy as np
-import random
 import matplotlib.pyplot as plt
 
 class MultiLayerNetwork(object):
@@ -128,7 +127,6 @@ class MultiLayerNetwork(object):
                 layer_error = np.dot(layer_errors[-1],
                                      self.weigths[i + 1])[:-1]
                 layer_error *= self.layer_transfer(self.outputs[i], True)
-
                 layer_errors.append(layer_error)
 
                 delta_weight = np.outer(
@@ -169,15 +167,16 @@ class MultiLayerNetwork(object):
         trains = 0
         while not self.all_pass(training_data):
             if trains > 0 and trains % train_steps == 0:
+                avg_error = sum(
+                    errors[-len(training_data):]) / len(training_data)
                 print("failed on {} trains with error {}"
-                      .format(trains, errors[-1]))
+                      .format(trains, avg_error))
                 if max_trains != 0 and trains >= max_trains:
                     return errors
 
             for i in range(train_steps):
                 input, expected = training_data[i % len(training_data)]
-                err = self.train(input, expected, learn_rate)
-                errors.append(err)
+                errors.append(self.train(input, expected, learn_rate))
                 trains += 1
 
         print("succeeded after {} trains".format(trains))
