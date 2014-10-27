@@ -1,7 +1,6 @@
 """ Multi Layer Perceptron """
 
 import numpy as np
-import random
 import matplotlib.pyplot as plt
 
 
@@ -56,6 +55,10 @@ class MultiLayerNetwork(object):
     def round2_function(value, derivate=False):
         """ rounds to 2 digits after decimal point """
         return np.around(value, 2)
+
+    @staticmethod
+    def direct_function(value, derivate=False):
+        return value
 
     def calc(self, input):
         """
@@ -115,7 +118,6 @@ class MultiLayerNetwork(object):
                 layer_error = np.dot(layer_errors[-1],
                                      self.weigths[i + 1])[:-1]
                 layer_error *= self.layer_transfer(self.outputs[i], True)
-
                 layer_errors.append(layer_error)
 
                 delta_weight = np.outer(
@@ -157,13 +159,15 @@ class MultiLayerNetwork(object):
         trains = 0
         while not self.all_pass(training_data):
             if trains > 0 and trains % train_steps == 0:
+                avg_error = sum(
+                    errors[-len(training_data):]) / len(training_data)
                 print("failed on {} trains with error {}"
-                      .format(trains, errors[-1]))
+                      .format(trains, avg_error))
                 if max_trains != 0 and trains >= max_trains:
                     return errors
 
             for i in range(train_steps):
-                input, expected = random.choice(training_data)
+                input, expected = training_data[i % len(training_data)]
                 errors.append(self.train(input, expected, learn_rate))
                 trains += 1
 
@@ -180,15 +184,15 @@ if __name__ == '__main__':
     ]
 
     network = MultiLayerNetwork(
-        layout=(2, 50, 1),
-        last_transfer_function=MultiLayerNetwork.round2_function)
+        layout=(2, 2, 2, 2, 1),
+        last_transfer_function=MultiLayerNetwork.step_function)
 
     errors = []
 
     # data, result = random.choice(training_data)
     # network.train(data, result, 1)
 
-    errors = network.train_until_fit(training_data, 1000, 0.2)
+    errors = network.train_until_fit(training_data, 1000, 0.2, 500000)
 
     # for i in range(10000):
     #     data, result = random.choice(training_data)
