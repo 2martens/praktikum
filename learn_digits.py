@@ -47,19 +47,6 @@ if __name__ == '__main__':
         training_data.append(data_set)
         digits.act()
 
-    # for cycles in range(100):
-    #     digits.newinit()
-    #     for i in range(number_of_digits):
-    #         inputs = digits.sensor()
-    #         expected = np.zeros(number_of_digits)
-    #         expected[i] = 1
-
-    #         err = network.train(inputs, expected)
-
-    # print("train inp: {} expected: {} error: {}".format(
-    # inputs, expected, err))
-    #         digits.act()
-
     errors = network.train_until_fit(
         training_data=training_data,
         train_steps=500,

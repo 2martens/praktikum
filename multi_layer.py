@@ -3,6 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 class MultiLayerNetwork(object):
 
     """ A Multi Layer Perceptron """
@@ -36,6 +37,7 @@ class MultiLayerNetwork(object):
             # plus 1 for bias
             start_weigths = np.random.uniform(
                 -0.1, +0.1, (layout[i + 1], layout[i] + 1))
+
             self.weigths.append(start_weigths)
 
     @staticmethod
@@ -55,19 +57,7 @@ class MultiLayerNetwork(object):
         return np.around(value, 2)
 
     @staticmethod
-    def round_function(value, derivate=False):
-        """ rounds to 1 digits after decimal point """
-        tmpVal = np.around(value, 1)
-        if (tmpVal == 0.9):
-            tmpVal = 1
-        elif (tmpVal == 0.1):
-            tmpVal = 0
-
-        return tmpVal
-
-    @staticmethod
     def direct_function(value, derivate=False):
-        """ returns the input """
         return value
 
     def calc(self, input):
@@ -108,6 +98,7 @@ class MultiLayerNetwork(object):
 
         # run the network
         self.calc(training_data)
+
         # calc error
         layer_errors = []
         weigth_change = []
@@ -138,6 +129,7 @@ class MultiLayerNetwork(object):
         # Update weights
         for i in range(len(self.layout) - 1):
             self.weigths[i] += weigth_change[(len(self.layout) - 2) - i]
+
         return error
 
     def all_pass(self, training_data):
@@ -192,7 +184,7 @@ if __name__ == '__main__':
     ]
 
     network = MultiLayerNetwork(
-        layout=(2, 2, 2, 2, 1),
+        layout=(2, 2, 1),
         last_transfer_function=MultiLayerNetwork.step_function)
 
     errors = []
@@ -204,7 +196,8 @@ if __name__ == '__main__':
 
     # for i in range(10000):
     #     data, result = random.choice(training_data)
-    #     errors.append(network.train(data, result, 0.2))
+    #     print(data, result)
+        # errors.append(network.train(data, result, 0.2))
 
     # print(network.weigths)
 
