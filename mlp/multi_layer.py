@@ -31,14 +31,20 @@ class MultiLayerNetwork(object):
         if "last_transfer_function" in options:
             self.last_layer_transfer = options.get("last_transfer_function")
 
-        # init weigths
-        self.weigths = []
+        # init weights
+        self.weights = []
         for i in range(len(layout) - 1):
             # plus 1 for bias
-            start_weigths = np.random.uniform(
+            start_weights = np.random.uniform(
                 -0.1, +0.1, (layout[i + 1], layout[i] + 1))
 
-            self.weigths.append(start_weigths)
+            self.weights.append(start_weights)
+
+    def get_weights(self):
+        return self.weights
+
+    def set_weights(self, weights):
+        self.weights = weights
 
     @staticmethod
     def sigmoid_function(value, derivate=False):
@@ -65,7 +71,7 @@ class MultiLayerNetwork(object):
         Calculates the network output for the given input
         @param input A array of inputs [in1, in2,..]
         """
-
+        
         lastNetResult = np.array(input)
         # save each layer in/output for training
         self.inputs = []
@@ -78,7 +84,7 @@ class MultiLayerNetwork(object):
             self.inputs.append(lastNetResult)
 
             # calc result
-            lastNetResult = np.dot(self.weigths[i], lastNetResult)
+            lastNetResult = np.dot(self.weights[i], lastNetResult)
             if i == len(self.layout) - 2:
                 # different activation function for last layer
                 lastNetResult = np.array(list(map(
@@ -113,10 +119,10 @@ class MultiLayerNetwork(object):
                     layer_error, self.inputs[-1]) * learning_rate
 
                 weigth_change.append(delta_weight)
-                #self.weigths[-1] += delta_weight
+                #self.weights[-1] += delta_weight
             else:
                 layer_error = np.dot(layer_errors[-1],
-                                     self.weigths[i + 1])[:-1]
+                                     self.weights[i + 1])[:-1]
                 layer_error *= self.layer_transfer(self.outputs[i], True)
                 layer_errors.append(layer_error)
 
@@ -124,11 +130,11 @@ class MultiLayerNetwork(object):
                     layer_error, self.inputs[i]) * learning_rate
 
                 weigth_change.append(delta_weight)
-                #self.weigths[i] += delta_weight
+                #self.weights[i] += delta_weight
 
         # Update weights
         for i in range(len(self.layout) - 1):
-            self.weigths[i] += weigth_change[(len(self.layout) - 2) - i]
+            self.weights[i] += weigth_change[(len(self.layout) - 2) - i]
 
         return error
 
@@ -194,12 +200,13 @@ if __name__ == '__main__':
 
     errors = network.train_until_fit(training_data, 1000, 0.2, 500000)
 
+
     # for i in range(10000):
     #     data, result = random.choice(training_data)
     #     print(data, result)
         # errors.append(network.train(data, result, 0.2))
 
-    # print(network.weigths)
+    # print(network.weights)
 
     for data, __ in training_data:
         result = network.calc(data)
