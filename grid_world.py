@@ -1,25 +1,30 @@
 #!/usr/bin/python
 
 import numpy as np
+from random import randint
 
 
 class world(object):
 
     """docstring for world"""
 
-    def __init__(self, size=(16, 16), startpos=(7, 7), target=(0, 0)):
+    def __init__(self, size=(16, 16), target=(0, 0), startpos=None):
         super(world, self).__init__()
         self.size = np.array(size)
         self.target = target
         self.newinit(startpos)
 
-    def newinit(self, startpos=(7, 7)):
+    def newinit(self, startpos=None):
+        if startpos is None:
+            startpos = (
+                randint(0, self.size[0] - 1), randint(0, self.size[1] - 1))
         self.world = np.zeros(self.size)
         self.world[startpos] = 1
         self.agent_position = startpos
 
     def position_in_world(self, position):
-        return (position >= (0, 0) and position[0] < self.size[0] and
+        return (position[0] >= 0 and position[1] >= 0 and
+                position[0] < self.size[0] and
                 position[1] < self.size[1])
 
     def act(self, action):
