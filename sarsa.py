@@ -51,11 +51,12 @@ if __name__ == '__main__':
 	weightTable = np.random.uniform (0.0, 0.0, (4, map_size))
 	sarsaObject = SARSA_Algorithm(50, 0.5, weightTable, map_size)
 	d_sum = 0
-	for i in range(0, 5):
+	for i in range(0, 10000):
 		duration = sarsaObject.sarsa(worldObj)
 		d_sum += duration
-		print('weights: ')
-		print(sarsaObject.getWeights())
+		if (i % 100 == 0):
+			print('weights: ')
+			print(sarsaObject.getWeights())
 
 	print('Durchschnitt duration:')
-	print(d_sum / 5)
+	print(d_sum / 10000)
