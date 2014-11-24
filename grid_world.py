@@ -40,10 +40,14 @@ class world(object):
             new_pos = tuple(
                 np.add(self.agent_position, actions[action.index(1)]))
 
-        if self.position_in_world(new_pos):
-            self.world[self.agent_position] = 0
-            self.world[new_pos] = 1
-            self.agent_position = new_pos
+            if self.position_in_world(new_pos):
+                self.world[self.agent_position] = 0
+                self.world[new_pos] = 1
+                self.agent_position = new_pos
+                return True
+
+        return False
+
 
     def get_sensor(self):
         return np.array(self.world.flat)
@@ -53,6 +57,7 @@ class world(object):
 
     def get_reward(self):
         return self.agent_position == self.target
+
 
 def getAction(weights, beta, action_len=4):
     """
@@ -77,7 +82,7 @@ def getAction(weights, beta, action_len=4):
             result[idx] = 1
             break
 
-    return result,idx
+    return result, idx
 
 if __name__ == '__main__':
     # W = world((4, 4), (2, 2))
