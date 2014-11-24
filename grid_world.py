@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import numpy as np
+import math
 from random import randint
 
 
@@ -28,7 +29,10 @@ class world(object):
                 position[1] < self.size[1])
 
     def act(self, action):
-        """ Expects the output from network """
+        """
+        Expects the output from network as array with one 1 at position for
+        action. Example [0, 0, 1, 0]
+        """
         # hoch, runter, rechts, links
         actions = [(-1, 0), (1, 0), (0, 1), (0, -1)]
         new_pos = self.agent_position
@@ -51,9 +55,34 @@ class world(object):
         return self.agent_position == self.target
 
 
+def getAction(propabilitys, beta, action_len=4):
+    """
+    [500,200,100,5] -> [1, 0, 0, 0]
+    """
+    betas = [math.exp(x * beta) for x in propabilitys]
+    total = sum(betas)
+    intervalle = []
+    intervallstart = 0
+
+    for i in betas:
+        intervalle.append(intervallstart + (i / total))
+        intervallstart = intervalle[-1]
+
+    random_number = np.random.uniform()
+    result = np.zeros(action_len)
+
+    for idx, val in enumerate(intervalle):
+        if random_number < val:
+            result[idx] = 1
+            break
+
+    return result
+
 if __name__ == '__main__':
-    W = world((4, 4), (2, 2))
-    print(W.get_sensor2d(), "\n")
+    # W = world((4, 4), (2, 2))
+    # print(W.get_sensor2d(), "\n")
     # nach links bewegen
-    W.act([0, 0, 0, 1])
-    print(W.get_sensor2d())
+    # W.act([0, 0, 0, 1])
+    # print(W.get_sensor2d())
+
+    print(getAction([5, 5, 5, 5], 2))
