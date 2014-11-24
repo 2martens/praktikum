@@ -55,11 +55,11 @@ class world(object):
         return self.agent_position == self.target
 
 
-def getAction(propabilitys, beta, action_len=4):
+def getAction(propabilities, beta, action_len=4):
     """
     [500,200,100,5] -> [1, 0, 0, 0]
     """
-    betas = [math.exp(x * beta) for x in propabilitys]
+    betas = [math.exp(x * beta) for x in propabilities]
     total = sum(betas)
     intervalle = []
     intervallstart = 0
@@ -76,7 +76,7 @@ def getAction(propabilitys, beta, action_len=4):
             result[idx] = 1
             break
 
-    return result
+    return result,idx
 
 if __name__ == '__main__':
     # W = world((4, 4), (2, 2))

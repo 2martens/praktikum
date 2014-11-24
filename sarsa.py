@@ -13,24 +13,17 @@ class SARSA_Algorithm(object):
 		'''SARSA algorithm'''
 		world.newinit()
 		s = world.get_sensor()
-		print(s)
-		print(self.weightTable)
 		# hoch, runter, rechts, links
 		h = np.dot(self.weightTable, s)
-		a = self.get_action(h, self.beta)
-		aVector = np.zeros(4)
-		aVector[a] = 1.0
+		aVector,a = grid_world.getAction(h, self.beta)
 		val = np.dot(self.weightTable[a], s)
-		self.qTable[s, a] = h[a]
 		r = world.get_reward()
 		while r == 0:
-			world.act(a)
+			world.act(aVector.tolist())
 			s_next = world.get_sensor()
 			r = world.get_reward()
 			h = np.dot(self.weightTable, s_next)
-			a_next = self.get_action(h, self.beta)
-			aVector = np.zeros(4)
-			aVector[a_next] = 1.0
+			aVector, a_next = grid_world.getAction(h, self.beta)
 			val_next = np.dot(self.weightTable[a_next], s_next)
 
 			if  r == 1.0:                                   
