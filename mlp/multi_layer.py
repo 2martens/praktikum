@@ -71,7 +71,7 @@ class MultiLayerNetwork(object):
         Calculates the network output for the given input
         @param input A array of inputs [in1, in2,..]
         """
-        
+
         lastNetResult = np.array(input)
         # save each layer in/output for training
         self.inputs = []
@@ -180,6 +180,15 @@ class MultiLayerNetwork(object):
         print("succeeded after {} trains".format(trains))
         return errors
 
+    def saveWeights(self, filepath):
+        np.save(filepath, self.weights)
+
+    def loadWeights(self, filepath):
+        try:
+            self.weights = np.load(filepath)
+        except IOError:
+            print("no weights to load")
+
 if __name__ == '__main__':
 
     training_data = [
@@ -200,14 +209,11 @@ if __name__ == '__main__':
 
     errors = network.train_until_fit(training_data, 1000, 0.2, 500000)
 
-
     # for i in range(10000):
     #     data, result = random.choice(training_data)
     #     print(data, result)
         # errors.append(network.train(data, result, 0.2))
-
     # print(network.weights)
-
     for data, __ in training_data:
         result = network.calc(data)
         print("{} -> {}".format(data, result))
