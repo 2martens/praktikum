@@ -28,6 +28,9 @@ if __name__ == '__main__':
         transfer_function = MultiLayerNetwork.sigmoid_function,
         last_transfer_function = MultiLayerNetwork.step_function)
 
+    filepath = "/home/dennis/test.npy"
+    network.loadWeights(filepath)
+
     # create data and result array for training
     training_data = []
     digits.newinit()
@@ -46,6 +49,9 @@ if __name__ == '__main__':
         train_steps=500,
         learn_rate=0.2,
         max_trains=500000)
+
+    # save to disk
+    network.saveWeights(filepath)
 
     # check results
     digits.newinit()
