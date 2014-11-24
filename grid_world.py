@@ -55,11 +55,11 @@ class world(object):
         return self.agent_position == self.target
 
 
-def getAction(propabilitys, beta, action_len=4):
+def getAction(weights, beta, action_len=4):
     """
-    [500,200,100,5] -> [1, 0, 0, 0]
+    Returns an action vector based on weights for actions
     """
-    betas = [math.exp(x * beta) for x in propabilitys]
+    betas = [math.exp(x * beta) for x in weights]
     total = sum(betas)
     intervalle = []
     intervallstart = 0
@@ -67,6 +67,8 @@ def getAction(propabilitys, beta, action_len=4):
     for i in betas:
         intervalle.append(intervallstart + (i / total))
         intervallstart = intervalle[-1]
+
+    intervalle[-1] = 1  # sometimes 0.99999
 
     random_number = np.random.uniform()
     result = np.zeros(action_len)
@@ -85,4 +87,4 @@ if __name__ == '__main__':
     # W.act([0, 0, 0, 1])
     # print(W.get_sensor2d())
 
-    print(getAction([5, 5, 5, 5], 2))
+    print(getAction([0.1, 0.2, 0.3, 0.2], 1))
