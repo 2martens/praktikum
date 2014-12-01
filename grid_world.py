@@ -13,6 +13,7 @@ class world(object):
     def __init__(self, size=(16, 16), target=(0, 0), startpos=None):
         super(world, self).__init__()
         self.size = np.array(size)
+        self.obstacles = np.zeros(size)
         self.target = target
         self.newinit(startpos)
 
@@ -27,7 +28,8 @@ class world(object):
     def position_in_world(self, position):
         return (position[0] >= 0 and position[1] >= 0 and
                 position[0] < self.size[0] and
-                position[1] < self.size[1])
+                position[1] < self.size[1] and
+                self.obstacles[position] != 9)
 
     def act(self, action):
         """
@@ -49,6 +51,9 @@ class world(object):
 
         return False
 
+    def setObstacles(self, obstacles):
+        self.obstacles = obstacles
+
     def get_sensor(self):
         return np.array(self.world.flat)
 
@@ -62,7 +67,8 @@ class world(object):
         print("")
         for i in range(0, self.size[0]):
             for j in range(0, self.size[1]):
-                print(int(self.world[i, j]), end=" ")
+                print(
+                    max(int(self.world[i, j]), self.obstacles[i, j]), end=" ")
             print("")
 
 

@@ -57,8 +57,13 @@ class SARSA_Algorithm(object):
 
 if __name__ == '__main__':
     training_steps = 10000
-    size_a, size_b = 10, 10
+    size_a, size_b = 4, 4
+    obstacles = np.array([[0, 9, 0, 0],
+                          [0, 9, 0, 0],
+                          [0, 9, 0, 0],
+                          [0, 0, 0, 0]])
     worldObj = grid_world.world(size=(size_a, size_b))
+    worldObj.setObstacles(obstacles)
     map_size = size_a * size_b
     weightTable = np.zeros((4, map_size))
     sarsaObject = SARSA_Algorithm(5, 0.2, weightTable, map_size)
@@ -69,7 +74,8 @@ if __name__ == '__main__':
         duration = sarsaObject.sarsa(worldObj)
         d_sum += duration
         if i % 100 == 0:
-            KT.exporttiles(sarsaObject.getWeights(), size_a, size_b, "/tmp/coco/obs_W_1_0.pgm", 1, 4)
+            KT.exporttiles(
+                sarsaObject.getWeights(), size_a, size_b, "/tmp/coco/obs_w_1_0.pgm", 1, 4)
 
     print('Durchschnitt Trainingsdauer pro Durchlauf: {}'
           .format(d_sum / training_steps))
