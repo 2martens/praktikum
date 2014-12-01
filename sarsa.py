@@ -1,6 +1,6 @@
 import numpy as np
 import grid_world
-
+import mlp.KTimage as KT
 
 class SARSA_Algorithm(object):
 
@@ -26,7 +26,7 @@ class SARSA_Algorithm(object):
             s_next = world.get_sensor()
             r = world.get_reward()
             h = np.dot(self.weightTable, s_next)
-            aVector, a_next = grid_world.getAction(h, self.beta)
+            aVector_next, a_next = grid_world.getAction(h, self.beta)
             val_next = np.dot(self.weightTable[a_next], s_next)
 
             if r:
@@ -40,6 +40,7 @@ class SARSA_Algorithm(object):
             s[0:self.map_size] = s_next[0:self.map_size]
             val = val_next
             a = a_next
+            aVector = aVector_next
             duration += 1
 
         return duration
@@ -62,17 +63,25 @@ if __name__ == '__main__':
     print(worldObj.get_sensor2d())
 
     d_sum = 0
-    for i in range(0, 100):
+    for i in range(0, 10000):
         duration = sarsaObject.sarsa(worldObj)
         d_sum += duration
-        print('weights: ')
-        print(sarsaObject.getWeights())
+
+        if i % 1000 == 0:
+        	# print('weights: ')
+        	# print(sarsaObject.getWeights())
+        	KT.exporttiles(sarsaObject.getWeights(), 3, 3, '/tmp/coco/obs_w_1_0.pgm', 1, 4)
 
     print('Durchschnitt duration:')
-    print(d_sum / 5)
+    print(d_sum / 10000)
 
     worldObj.newinit()
     print(worldObj.get_sensor2d())
+    steps = 0
     while not worldObj.get_reward():
         worldObj.act(sarsaObject.decideAction(worldObj.get_sensor()))
+        steps += 1
         print(worldObj.get_sensor2d())
+
+    print('steps:')
+    print(steps)
