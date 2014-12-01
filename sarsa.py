@@ -14,15 +14,15 @@ class SARSA_Algorithm(object):
         '''SARSA algorithm'''
         world.newinit()
         s = world.get_sensor()
-        successfull = True
         # hoch, runter, rechts, links
         h = np.dot(self.weightTable, s)
         aVector, a = grid_world.getAction(h, self.beta)
         val = np.dot(self.weightTable[a], s)
         r = world.get_reward()
         duration = 0
-        while not r and successfull:
-            successfull = world.act(aVector.tolist())
+        while not r:
+            if not world.act(aVector.tolist()):
+            	break
             s_next = world.get_sensor()
             r = world.get_reward()
             h = np.dot(self.weightTable, s_next)
@@ -36,7 +36,7 @@ class SARSA_Algorithm(object):
                 target = 0.9 * val_next
 
             delta = target - val
-            self.weightTable += 0.5 * delta * np.outer(aVector, s)
+            self.weightTable += 0.1 * delta * np.outer(aVector, s)
             s[0:self.map_size] = s_next[0:self.map_size]
             val = val_next
             a = a_next
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     size_a, size_b = 3, 3
     worldObj = grid_world.world(size=(size_a, size_b))
     map_size = size_a * size_b
-    weightTable = np.random.uniform(0.0, 0.0, (4, map_size))
+    weightTable = np.zeros((4, map_size))
     sarsaObject = SARSA_Algorithm(5, 0.2, weightTable, map_size)
 
     print(worldObj.get_sensor2d())
