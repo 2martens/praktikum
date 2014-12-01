@@ -31,6 +31,7 @@ class SARSA_Algorithm(object):
 
             if r:
                 target = 1.0
+
             else:
                 target = 0.9 * val_next
 
@@ -56,12 +57,12 @@ if __name__ == '__main__':
     worldObj = grid_world.world(size=(size_a, size_b))
     map_size = size_a * size_b
     weightTable = np.random.uniform(0.0, 0.0, (4, map_size))
-    sarsaObject = SARSA_Algorithm(50, 0.5, weightTable, map_size)
+    sarsaObject = SARSA_Algorithm(5, 0.2, weightTable, map_size)
 
     print(worldObj.get_sensor2d())
 
     d_sum = 0
-    for i in range(0, 5):
+    for i in range(0, 100):
         duration = sarsaObject.sarsa(worldObj)
         d_sum += duration
         print('weights: ')
