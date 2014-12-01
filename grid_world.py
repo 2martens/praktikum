@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import print_function
 
 import numpy as np
 import math
@@ -48,7 +49,6 @@ class world(object):
 
         return False
 
-
     def get_sensor(self):
         return np.array(self.world.flat)
 
@@ -57,6 +57,13 @@ class world(object):
 
     def get_reward(self):
         return self.agent_position == self.target
+
+    def printWorld(self):
+        print("")
+        for i in range(0, self.size[0]):
+            for j in range(0, self.size[1]):
+                print(int(self.world[i, j]), end=" ")
+            print("")
 
 
 def getAction(weights, beta, action_len=4):
@@ -76,13 +83,15 @@ def getAction(weights, beta, action_len=4):
 
     random_number = np.random.uniform()
     result = np.zeros(action_len)
+    result_index = 0
 
     for idx, val in enumerate(intervalle):
         if random_number < val:
             result[idx] = 1
+            result_index = idx
             break
 
-    return result, idx
+    return result, result_index
 
 if __name__ == '__main__':
     # W = world((4, 4), (2, 2))
