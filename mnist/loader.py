@@ -72,7 +72,7 @@ class MNIST(object):
         assert len(train_img) == 60000
         print 'Showing num:%d' % train_label[0]
         print self.display(train_img[0])
-        print
+        print ''
         return True
 
     @classmethod
@@ -88,6 +88,6 @@ class MNIST(object):
 
 if __name__ == "__main__":
     print 'Testing'
-    mn = MNIST('.')
+    mn = MNIST('../mnistDATA/')
     if mn.test():
         print 'Passed'
