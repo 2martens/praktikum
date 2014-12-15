@@ -2,6 +2,8 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import random
+import KTimage
 
 
 class MultiLayerNetwork(object):
@@ -11,8 +13,8 @@ class MultiLayerNetwork(object):
     def __init__(self, layout, **options):
         """
         Creates a new MultiLayerNetwork
-        @param layout A tuple describing the number of neurons
-                      per layer (inputsize, hid1, hid2,..,out)
+        @param layout A tupel describing the number of neurons
+                      per layer [inputsize, hid1, hid2,..,out]
         Extra options:
         transfer_function
         last_transfer_function
@@ -80,6 +82,7 @@ class MultiLayerNetwork(object):
 
         for i in range(len(self.layout) - 1):
             # append bias
+            # print(lastNetResult)
             lastNetResult = np.hstack((lastNetResult, [1]))
 
             self.inputs.append(lastNetResult)
@@ -138,83 +141,6 @@ class MultiLayerNetwork(object):
             self.weights[i] += weigth_change[(len(self.layout) - 2) - i]
 
         return error
-
-    def train_SGD(self, training_data, expected, learning_rate=0.2):
-        """
-        Trains the network using the backpropagation algorithm and stochastic gradient descent
-        @return error, weight_change
-        """
-
-        # run the network
-        self.calc(training_data)
-
-        # calc error
-        layer_errors = []
-        weight_change = []
-        error = 0.5 * sum((np.add(expected, -self.outputs[-1]) ** 2))
-
-        for i in reversed(range(len(self.layout) - 1)):
-            if i == (len(self.layout) - 2):
-                layer_error = np.add(expected, -self.outputs[-1])
-                layer_errors.append(layer_error)
-
-                delta_weight = np.outer(
-                    layer_error, self.inputs[-1]) * learning_rate
-
-                weight_change.append(delta_weight)
-            else:
-                layer_error = np.dot(layer_errors[-1],
-                                     self.weights[i + 1])[:-1]
-                layer_error *= self.layer_transfer(self.outputs[i], True)
-                layer_errors.append(layer_error)
-
-                delta_weight = np.outer(
-                    layer_error, self.inputs[i]) * learning_rate
-
-                weight_change.append(delta_weight)
-
-        return error, weight_change
-
-    def SGD(self, training_data, train_steps, mini_batch_size, learning_rate,
-            test_data=None):
-        '''Uses SGD to solve a problem'''
-
-        if test_data: length_test = len(test_data)
-        length = len(training_data)
-        for j in xrange(train_steps):
-            random.shuffle(training_data)
-            mini_batches = [
-                training_data[k:k+mini_batch_size]
-                for k in xrange(0, length, mini_batch_size)]
-            for mini_batch in mini_batches:
-                self.update_mini_batch(mini_batch, learning_rate)
-            if test_data:
-                print("Iteration {0}: {1} / {2}".format(
-                    j, self.evaluate(test_data), length_test))
-            else:
-                print("Iteration {0} complete".format(j))
-
-    def update_mini_batch(self, mini_batch, learning_rate):
-        '''Updates a mini batch'''
-        new_weights = self.weights
-        for input, expected in mini_batch:
-            error, weight_change = self.train_SGD(input, expected, learning_rate)
-            for i in range(len(self.layout) - 1):
-                new_weights[i] += weight_change[(len(self.layout) - 2) - i]
-
-        self.weights = new_weights
-
-    def evaluate(self, test_data):
-        '''Returns the number of outputs that are correct'''
-
-        correctResults = 0
-        for input, expected in test_data:
-            result = self.calc(input)
-            if np.array_equal(result, expected):
-                correctResults += 1
-
-        return correctResults
-
 
     def all_pass(self, training_data):
         """
