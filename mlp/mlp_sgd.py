@@ -39,14 +39,6 @@ class MultiLayerNetwork(object):
         self.biases = biases
 
     @staticmethod
-    def sigmoid_function(value):
-        return (1.0 / (1.0 + np.exp(-value)))
-
-    @staticmethod
-    def sigmoid_prime_function(value):
-        return (MultiLayerNetwork.sigmoid_function(value) * (1.0 - MultiLayerNetwork.sigmoid_function(value)))
-
-    @staticmethod
     def step_function(value, derivate=False):
         return 0 if value < 0 else 1
 
@@ -95,8 +87,8 @@ class MultiLayerNetwork(object):
         new_weights = [np.zeros(w.shape) for w in self.weights]
         for x, y in mini_batch:
             delta_biases, delta_weights = self.backprop(x, y)
-            new_weights = [new_bias + delta_new_bias for new_bias, delta_new_bias in zip(new_biases, delta_biases)]
-            new_biases = [new_weight + delta_new_weight for new_weight, delta_new_weight in zip(new_weights, delta_weights)]
+            new_biases = [new_bias + delta_new_bias for new_bias, delta_new_bias in zip(new_biases, delta_biases)]
+            new_weights = [new_weight + delta_new_weight for new_weight, delta_new_weight in zip(new_weights, delta_weights)]
         self.weights = [weight - (learning_rate / len(mini_batch)) * new_weight 
                         for weight, new_weight in zip(self.weights, new_weights)]
         self.biases = [bias - (learning_rate / len(mini_batch)) * new_bias 
@@ -158,5 +150,11 @@ class MultiLayerNetwork(object):
         except IOError:
             print("no weights to load")
 
-sigmoid_vectorize = np.vectorize(MultiLayerNetwork.sigmoid_function)
-sigmoid_prime_vectorize = np.vectorize(MultiLayerNetwork.sigmoid_prime_function)
+def sigmoid_function(value):
+    return (1.0 / (1.0 + np.exp(-value)))
+
+def sigmoid_prime_function(value):
+    return (sigmoid_function(value) * (1.0 - sigmoid_function(value)))
+
+sigmoid_vectorize = np.vectorize(sigmoid_function)
+sigmoid_prime_vectorize = np.vectorize(sigmoid_prime_function)
