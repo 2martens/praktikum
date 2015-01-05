@@ -39,12 +39,4 @@ if __name__ == '__main__':
 
 	net = Network([784,30,10])
 
-	# training_data = buildData(training_data)
-	# validation_data = buildData(validation_data)
-	# test_data = buildData(test_data)
-
-	# print(training_data[0])
-	# print(training_data[0][0].shape)
 	network.SGD(training_data, 30, 10, 3.0, test_data=test_data)
-	# net.SGD(training_data, 30, 10, 3.0, test_data=test_data)
-
