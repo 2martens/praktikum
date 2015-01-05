@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 from mlp.multi_layer import MultiLayerNetwork
 from PIL import Image, ImageChops
 import numpy as np
@@ -132,7 +134,7 @@ class Gui(object):
 
     """Gui class"""
 
-    TRAIN_DATA = "/home/dennis/workspace/python/Praktikum Neurale Netze/data"
+    TRAIN_DATA = "data"
 
     DRAW_COLOR = (0, 0, 0)
     DRAW_WIDTH = 10
