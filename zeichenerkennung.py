@@ -3,6 +3,7 @@ from PIL import Image, ImageChops
 import numpy as np
 import math
 import os
+import sys
 
 import pygame
 import time
@@ -17,8 +18,8 @@ class PreSizer(object):
     """
 
     # Bildgröße mit der gearbeitet wird
-    IMAGE_WIDTH = 75
-    IMAGE_HEIGHT = 75
+    IMAGE_WIDTH = 14
+    IMAGE_HEIGHT = 20
     IMGE_FORM = (IMAGE_WIDTH, IMAGE_HEIGHT)
     IMAGE_SIZE = IMAGE_HEIGHT * IMAGE_WIDTH
 
@@ -69,8 +70,7 @@ class Recognizer(object):
         # Das netzwerk zum erkennen von Zeichen
         self.recognizeNetwork = MultiLayerNetwork(
             layout=(PreSizer.IMAGE_SIZE,
-                    PreSizer.IMAGE_HEIGHT,
-                    PreSizer.IMAGE_HEIGHT,
+                    PreSizer.IMAGE_SIZE / 2,
                     len(Recognizer.DIGITS)),
             transfer_function=MultiLayerNetwork.sigmoid_function,
             last_transfer_function=MultiLayerNetwork.step_function)
@@ -82,7 +82,7 @@ class Recognizer(object):
         return list(map(lambda x: 0 | x[2] << 16 | x[1] << 8 | x[0],
                         image.getdata()))
 
-    def train(self, folderpath):
+    def train(self, folderpath, outputF=print):
         """
         Trainiert das Netzwerk mit allen Bildern in folderpath
         Alle Bilder müssen auf .jpg enden und mit dem soll Zeichen Beginnen
@@ -102,9 +102,9 @@ class Recognizer(object):
             dataSet.append([data, expected])
 
         print(files)
-        print("starting training")
+        outputF("starting training")
 
-        self.recognizeNetwork.train_until_fit(dataSet, 200, 0.2, 50000)
+        self.recognizeNetwork.train_until_fit(dataSet, 1000, 0.1, 800000, outputF)
         self.isTrained = True
 
     def decodedAnswer(self, result):
@@ -178,10 +178,20 @@ class Gui(object):
         self.msgArea.blit(trained, (10, 170))
         self.msgArea.blit(result, (10, 200))
 
+    def showMsg(self, msg):
+        self.handleEvents()
+
+        self.drawArea.fill(Gui.BACKGROUND_COLOR)
+        message = self.font.render(msg, True, Gui.DRAW_COLOR)
+        self.drawArea.blit(message, (15, 190))
+        self.screen.blit(self.drawArea, (0, 0))
+        pygame.display.flip()
+
     def handleEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+                sys.exit()
 
             elif event.type == pygame.MOUSEMOTION:
                 drawEnd = pygame.mouse.get_pos()
@@ -201,7 +211,7 @@ class Gui(object):
                     self.drawArea.fill(Gui.BACKGROUND_COLOR)
 
                 elif event.key == pygame.K_t:
-                    self.recognizer.train(Gui.TRAIN_DATA)
+                    self.recognizer.train(Gui.TRAIN_DATA, self.showMsg)
                     self.updateStatus()
 
                 elif event.key == pygame.K_n:
@@ -245,7 +255,6 @@ class Gui(object):
             timestr = time.strftime("%d%m%Y-%I%M%S")
             dest = Gui.TRAIN_DATA + "/" + inputString + "_" + timestr + ".jpg"
             shutil.copyfile(Gui.IMAGE_NAME, dest)
-
 
     def run(self):
         while self.running:
