@@ -36,7 +36,7 @@ class MultiLayerNetwork(object):
         for i in range(len(layout) - 1):
             # plus 1 for bias
             start_weights = np.random.uniform(
-                -0.1, +0.1, (layout[i + 1], layout[i] + 1))
+                -0.05, +0.05, (layout[i + 1], layout[i] + 1))
 
             self.weights.append(start_weights)
 
@@ -153,7 +153,7 @@ class MultiLayerNetwork(object):
         return True
 
     def train_until_fit(self, training_data, train_steps=1000,
-                        learn_rate=0.2, max_trains=500000):
+                        learn_rate=0.2, max_trains=500000,  outputF=print):
         """
         trains the network untill all training_data passes
         @param training_data ([input1, input2,..], [expected1, expected...])
@@ -169,8 +169,8 @@ class MultiLayerNetwork(object):
             if trains > 0 and trains % train_steps == 0:
                 avg_error = sum(
                     errors[-len(training_data):]) / len(training_data)
-                print("failed on {} trains with error {}"
-                      .format(trains, avg_error))
+                outputF("failed on {} trains with error {}"
+                        .format(trains, avg_error))
                 if max_trains != 0 and trains >= max_trains:
                     return errors
 
@@ -179,7 +179,7 @@ class MultiLayerNetwork(object):
                 errors.append(self.train(input, expected, learn_rate))
                 trains += 1
 
-        print("succeeded after {} trains".format(trains))
+        outputF("succeeded after {} trains".format(trains))
         return errors
 
     def saveWeights(self, filepath):
