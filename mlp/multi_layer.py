@@ -2,6 +2,8 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import random
+import math
 
 
 class MultiLayerNetwork(object):
@@ -16,6 +18,7 @@ class MultiLayerNetwork(object):
         Extra options:
         transfer_function
         last_transfer_function
+        output_function
         """
 
         super(MultiLayerNetwork, self).__init__()
@@ -24,6 +27,8 @@ class MultiLayerNetwork(object):
         self.layer_transfer = MultiLayerNetwork.sigmoid_function
         self.last_layer_transfer = MultiLayerNetwork.step_function
 
+        self.outputFun = print
+
         if "transfer_function" in options:
             self.layer_transfer = options.get("transfer_function")
             self.last_layer_transfer = options.get("transfer_function")
@@ -31,12 +36,15 @@ class MultiLayerNetwork(object):
         if "last_transfer_function" in options:
             self.last_layer_transfer = options.get("last_transfer_function")
 
+        if "output_function" in options:
+            self.outputFun = options.get("output_function")
+
         # init weights
         self.weights = []
         for i in range(len(layout) - 1):
             # plus 1 for bias
             start_weights = np.random.uniform(
-                -0.05, +0.05, (layout[i + 1], layout[i] + 1))
+                -0.1, +0.1, (layout[i + 1], layout[i] + 1))
 
             self.weights.append(start_weights)
 
@@ -52,6 +60,13 @@ class MultiLayerNetwork(object):
             return (1 / (1 + np.exp(-value)))
         else:
             return (value * (1 - value))
+
+    @staticmethod
+    def tanh_function(value, derivate=False):
+        if not derivate:
+            return math.tanh(value)
+        else:
+            return (1 - (value ** 2))
 
     @staticmethod
     def step_function(value, derivate=False):
@@ -80,7 +95,7 @@ class MultiLayerNetwork(object):
 
         for i in range(len(self.layout) - 1):
             # append bias
-            # print(lastNetResult)
+            # self.outputFun(lastNetResult)
             lastNetResult = np.hstack((lastNetResult, [1]))
 
             self.inputs.append(lastNetResult)
@@ -92,7 +107,9 @@ class MultiLayerNetwork(object):
                 lastNetResult = np.array(list(map(
                     self.last_layer_transfer, np.nditer(lastNetResult))))
             else:
-                lastNetResult = self.layer_transfer(lastNetResult)
+                # lastNetResult = self.layer_transfer(lastNetResult)
+                lastNetResult = np.array(list(map(
+                    self.layer_transfer, np.nditer(lastNetResult))))
 
             self.outputs.append(lastNetResult)
 
@@ -153,7 +170,7 @@ class MultiLayerNetwork(object):
         return True
 
     def train_until_fit(self, training_data, train_steps=1000,
-                        learn_rate=0.2, max_trains=500000,  outputF=print):
+                        learn_rate=0.2, max_trains=500000):
         """
         trains the network untill all training_data passes
         @param training_data ([input1, input2,..], [expected1, expected...])
@@ -169,27 +186,34 @@ class MultiLayerNetwork(object):
             if trains > 0 and trains % train_steps == 0:
                 avg_error = sum(
                     errors[-len(training_data):]) / len(training_data)
-                outputF("failed on {} trains with error {}"
-                        .format(trains, avg_error))
+                self.outputFun("failed on {} trains with error {}"
+                               .format(trains, avg_error))
                 if max_trains != 0 and trains >= max_trains:
                     return errors
 
             for i in range(train_steps):
-                input, expected = training_data[i % len(training_data)]
+                # input, expected = training_data[i % len(training_data)]
+                input, expected = random.choice(training_data)
                 errors.append(self.train(input, expected, learn_rate))
                 trains += 1
 
-        outputF("succeeded after {} trains".format(trains))
+        self.outputFun("succeeded after {} trains".format(trains))
         return errors
 
     def saveWeights(self, filepath):
         np.save(filepath, self.weights)
+        self.outputFun("weights saved")
 
     def loadWeights(self, filepath):
+        succeeded = False
         try:
             self.weights = np.load(filepath)
+            succeeded = True
+            self.outputFun("weights loaded")
         except IOError:
-            print("no weights to load")
+            self.outputFun("no weights to load")
+
+        return succeeded
 
 if __name__ == '__main__':
 
@@ -202,6 +226,7 @@ if __name__ == '__main__':
 
     network = MultiLayerNetwork(
         layout=(2, 2, 1),
+        transfer_function=MultiLayerNetwork.tanh_function,
         last_transfer_function=MultiLayerNetwork.step_function)
 
     errors = []

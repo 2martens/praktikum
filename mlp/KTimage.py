@@ -21,7 +21,7 @@ def importimage(filename):
 
     lowS, highS = 0.0, 1.0
 
-    f = open(filename, 'r')
+    f = open(filename, 'r', encoding="ISO-8859-1")
 
     # file key: only "P2" (greyscale as readable ascii) or "P5" (greyscale as
     # machine code characters)
