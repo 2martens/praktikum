@@ -6,7 +6,7 @@ import os
 import sys
 import glob
 import numpy as N
-import mlp.KTimage as KT
+import KTimage as KT
 
 
 class world_retina(object):
