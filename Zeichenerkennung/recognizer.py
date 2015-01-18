@@ -68,6 +68,7 @@ class Recognizer(object):
         try:
             data = PreSizer.getDataFromImage(img)
         except AttributeError:
+            print("empty image")
             return "empty"
         # img.show()
 
@@ -83,7 +84,31 @@ class Recognizer(object):
 
 
 def main():
-    print("run zeichenerkennung_gui.py")
+    net = Recognizer(print)
+    net.train("data")
+
+    testDataDir = "testData"
+
+    correctCount = 0
+    wrongCount = 0
+
+    print("testing with test data")
+
+    files = [x for x in os.listdir(testDataDir)
+             if x.endswith(".jpg")]
+
+    for index, image in enumerate(files):
+        expected = files[index][0]
+        result = net.getResult(testDataDir + "/" + image)
+
+        print("{} - {}".format(expected, result))
+
+        if result == expected:
+            correctCount += 1
+        else:
+            wrongCount += 1
+
+    print("correct: {}   wrong:{}".format(correctCount, wrongCount))
 
 
 if __name__ == '__main__':
