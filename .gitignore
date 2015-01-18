@@ -56,3 +56,4 @@ target/
 #CUSTOM
 SARSA.py
 current.jpg
+Zeichenerkennung/opt_data/
