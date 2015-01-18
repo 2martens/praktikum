@@ -3,7 +3,7 @@ from world_retina import world_retina
 import numpy as np
 import KTimage
 import random
-# import os
+import os
 
 
 class EdgeDetector(object):
@@ -26,7 +26,7 @@ class EdgeDetector(object):
 
             self.weights.append(start_weights)
 
-        self.last_layer_transfer = EdgeDetector.transfer_function
+        self.last_layer_transfer = EdgeDetector.step_function
         self.layer_transfer = EdgeDetector.transfer_function
 
     @staticmethod
@@ -40,6 +40,10 @@ class EdgeDetector(object):
             #  f'(x) = b (1 + a (b^2 x^2 - 1) / (b^2 x^2 + 1)2)
             return ((b * (1 + a * (b ** 2 * x ** 2 - 1))) /
                     (2 * (b ** 2 * x ** 2 + 1)))
+
+    @staticmethod
+    def step_function(value, derivate=False):
+        return 0 if value < 0 else 1
 
     def run(self, input):
         """
@@ -111,7 +115,7 @@ class EdgeDetector(object):
         # Update weights
         for i in range(len(self.layout) - 1):
             self.weights[i] += weigth_change[(len(self.layout) - 2) - i]
-            self.weights[i] -= self.weights[i] * learn_rate * 0.001
+            self.weights[i] -= self.weights[i] * learn_rate * 0.01
 
         return error
 
@@ -146,15 +150,16 @@ class EdgeDetector(object):
                     errors[-len(training_data):]) / len(training_data)
                 self.outputFun("failed on {} trains with error {}"
                                .format(trains, avg_error))
-                self.visualize()
                 if max_trains != 0 and trains >= max_trains:
                     return errors
 
             for i in range(train_steps):
-                input, expected = training_data[i % len(training_data)]
+                # input, expected = training_data[i % len(training_data)]
                 input, expected = random.choice(training_data)
                 errors.append(self.train(input, expected, learn_rate))
                 trains += 1
+                if trains % train_steps == 0:
+                    self.visualize()
 
         self.outputFun("succeeded after {} trains".format(trains))
         return errors
@@ -163,26 +168,53 @@ class EdgeDetector(object):
         for i in range(2):
             KTimage.exporttiles(
                 self.weights[i],
-                10,
-                10,
+                14,
+                20,
                 "/tmp/coco/obs_W_{}_{}.pgm".format(i + 1, i),
-                10,
-                10)
+                14,
+                20)
+
+        KTimage.exporttiles(self.inputs[0], 14, 20, "/tmp/coco/obs_S_0.pgm")
+        KTimage.exporttiles(self.inputs[1], 14, 20, "/tmp/coco/obs_S_1.pgm")
+        KTimage.exporttiles(self.outputs[-1], 14, 20, "/tmp/coco/obs_S_2.pgm")
 
 
 def main():
-    edge = EdgeDetector((100, 100, 100))
+    edge = EdgeDetector((size, size, size))
     retina = world_retina('BSDS30_filt', 32, 481, 481, 10)
 
     datenSatz = []
 
-    for i in range(200):
+    for i in range(200000):
         data = retina.sensor()
         retina.act()
 
         datenSatz.append([data, data])
 
     edge.train_until_fit(datenSatz, 500, 0.1)
+
+    # size = PreSizer.IMAGE_SIZE
+    # edge = EdgeDetector((size, size, size))
+    # files = [x for x in os.listdir(EdgeDetector.FOLDER)
+    #          if x.endswith(".jpg")]
+    # dataSet = []
+
+    # for image in files:
+    #     img = PreSizer.getOptimizedImage(EdgeDetector.FOLDER + "/" + image)
+    #     data = PreSizer.getDataFromImage(img)
+
+    #     expected = data
+
+    #     dataSet.append([data, expected])
+
+    # print("starting training")
+
+    # print(files[0])
+    # print(len(dataSet[0][0]), PreSizer.IMAGE_SIZE)
+    # print(dataSet[0][0])
+
+    edge.train_until_fit(
+        dataSet, 500, 0.1, 800000)
 
 if __name__ == '__main__':
     main()
