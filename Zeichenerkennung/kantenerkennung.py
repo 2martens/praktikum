@@ -11,12 +11,18 @@ class EdgeDetector(object):
     """docstring for EdgeDetector"""
 
     FOLDER = "data"
+    KTIMAGE_DATA = "/tmp/coco"
 
-    def __init__(self, layout):
+    def __init__(self, width, height):
         super(EdgeDetector, self).__init__()
 
+        size = width * height
+
+        self.width = width
+        self.height = height
+
         self.outputFun = print
-        self.layout = layout
+        self.layout = (size, size, size)
 
         # init weights
         self.weights = []
@@ -26,8 +32,14 @@ class EdgeDetector(object):
 
             self.weights.append(start_weights)
 
-        self.last_layer_transfer = EdgeDetector.step_function
+        self.last_layer_transfer = EdgeDetector.transfer_function
         self.layer_transfer = EdgeDetector.transfer_function
+
+        # sicherstellen das der Ordner für visualize vorhanden ist
+        try:
+            os.makedirs(EdgeDetector.KTIMAGE_DATA)
+        except FileExistsError:
+            pass
 
     @staticmethod
     def transfer_function(x, derivate=False):
@@ -35,11 +47,10 @@ class EdgeDetector(object):
         b = 2
         if not derivate:
             #  f(x) = b (x - a x / (1 + b^2 x^2))
-            return (b * (x - (a * x))) / (1 + (b ** 2 * x ** 2))
+            return b * (x - (a * (x / (1 + ((b ** 2) * (x ** 2))))))
         else:
             #  f'(x) = b (1 + a (b^2 x^2 - 1) / (b^2 x^2 + 1)2)
-            return ((b * (1 + a * (b ** 2 * x ** 2 - 1))) /
-                    (2 * (b ** 2 * x ** 2 + 1)))
+            return b * (1 + (a * ( ((b ** 2) * (x ** 2) -1) / (((b ** 2) * (x ** 2) + 1) ** 2)) ))
 
     @staticmethod
     def step_function(value, derivate=False):
@@ -115,7 +126,7 @@ class EdgeDetector(object):
         # Update weights
         for i in range(len(self.layout) - 1):
             self.weights[i] += weigth_change[(len(self.layout) - 2) - i]
-            self.weights[i] -= self.weights[i] * learn_rate * 0.01
+            # self.weights[i] -= self.weights[i] * learn_rate * 0.001
 
         return error
 
@@ -168,19 +179,20 @@ class EdgeDetector(object):
         for i in range(2):
             KTimage.exporttiles(
                 self.weights[i],
-                14,
-                20,
+                self.width, self.height,
                 "/tmp/coco/obs_W_{}_{}.pgm".format(i + 1, i),
-                14,
-                20)
+                self.width, self.height)
 
-        KTimage.exporttiles(self.inputs[0], 14, 20, "/tmp/coco/obs_S_0.pgm")
-        KTimage.exporttiles(self.inputs[1], 14, 20, "/tmp/coco/obs_S_1.pgm")
-        KTimage.exporttiles(self.outputs[-1], 14, 20, "/tmp/coco/obs_S_2.pgm")
+        KTimage.exporttiles(self.inputs[0], self.width, self.height,
+                            "/tmp/coco/obs_S_0.pgm")
+        KTimage.exporttiles(self.inputs[1], self.width, self.height,
+                            "/tmp/coco/obs_S_1.pgm")
+        KTimage.exporttiles(self.outputs[-1], self.width, self.height,
+                            "/tmp/coco/obs_S_2.pgm")
 
 
 def main():
-    edge = EdgeDetector((size, size, size))
+    edge = EdgeDetector(10, 10)
     retina = world_retina('BSDS30_filt', 32, 481, 481, 10)
 
     datenSatz = []
@@ -213,24 +225,11 @@ def main():
     # print(len(dataSet[0][0]), PreSizer.IMAGE_SIZE)
     # print(dataSet[0][0])
 
-    edge.train_until_fit(
-        dataSet, 500, 0.1, 800000)
+    # edge.train_until_fit(
+    #     dataSet, 500, 0.1, 800000)
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # def train(self):
