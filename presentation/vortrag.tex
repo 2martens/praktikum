@@ -1,3 +1,4 @@
+\RequirePackage{pdf14}
 \documentclass[14pt]{beamer}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -220,14 +221,53 @@
 %%%%%%%%%%%%%%
 % Your Content
 
-\section{Motivation}
+\section{Motivation und Frage}
 \begin{frame}
 	\frametitle{Motivation}
+	\begin{itemize}
+		\item Digitalisierung von (alten) Büchern
+		\item Hausnummernerkennung
+	\end{itemize}
 \end{frame}
 
-\section{Conclusion}
 \begin{frame}
-  \frametitle{Conclusion}
+	\frametitle{Frage}
+	\centering
+	Wie kann Zeichenerkennung mit einem "`haushaltsüblichen"' neuronalen Netz erreicht werden?
+\end{frame}
+
+\section{Eigene Lösung}
+\begin{frame}
+	\frametitle{Aufbau}
+	\begin{itemize}
+		\item Grundlage ist MLP
+		\item Recognizer, der Ziffern aus Daten erkennt
+		\item Presizer, der die Bilddaten in passendere Größe umwandelt
+		\item GUI, zur Eingabe von Test- und Trainingsdaten
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Funktionsweise}
+	\centering
+	Live-Demo
+\end{frame}
+
+\section{Fazit}
+\begin{frame}
+	\frametitle{Fazit}
+	\begin{itemize}
+		\item Ziffernerkennung vergleichsweise einfach
+		\item Erkennung von nicht-trainierten Zeichen sehr unwahrscheinlich
+		\item schlechte Erkennung von \(\lnot\)normalen Zeichen (im Vergleich zu Trainingsdaten)
+	\end{itemize}
+
+	\mbox{ }
+
+	Offene Probleme:
+	\begin{itemize}
+		\item Kantenerkennung
+	\end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%
@@ -235,8 +275,8 @@
 \begin{frame}
 	\frametitle{The End}
 	\begin{center}
-		Thank you for your attention.\\[1ex]
-		Any questions?\\[5ex]
+		Vielen Dank\\[1ex]
+		Gibt es Fragen?\\[5ex]
 	\end{center}
 \end{frame}
 
