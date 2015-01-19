@@ -8,7 +8,7 @@ option add *background gray26
 
 # global variables can also be set after the proc's
 set AUTOREFRESH 0
-set ZOOM 5
+set ZOOM 4
 set TMPPATH /tmp/coco
 
 set activations_side top    ;# set: top  or  left

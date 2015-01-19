@@ -33,7 +33,7 @@ class EdgeDetector(object):
             self.weights.append(start_weights)
 
         self.last_layer_transfer = EdgeDetector.transfer_function
-        self.layer_transfer = EdgeDetector.transfer_function
+        self.layer_transfer = EdgeDetector.direct_function
 
         # sicherstellen das der Ordner für visualize vorhanden ist
         try:
@@ -42,19 +42,26 @@ class EdgeDetector(object):
             pass
 
     @staticmethod
+    def sigmoid_function(value, derivate=False):
+        if not derivate:
+            return (1 / (1 + np.exp(-value)))
+        else:
+            return (value * (1 - value))
+
+    @staticmethod
     def transfer_function(x, derivate=False):
-        a = 0.5
+        a = 0.8
         b = 2
         if not derivate:
             #  f(x) = b (x - a x / (1 + b^2 x^2))
-            return b * (x - (a * (x / (1 + ((b ** 2) * (x ** 2))))))
+            return b * (x - (a * x / (1 + ((b ** 2) * (x ** 2)))))
         else:
             #  f'(x) = b (1 + a (b^2 x^2 - 1) / (b^2 x^2 + 1)2)
-            return b * (1 + (a * ( ((b ** 2) * (x ** 2) -1) / (((b ** 2) * (x ** 2) + 1) ** 2)) ))
+            return b * (1 + (a * (((b ** 2) * (x ** 2) - 1) / (((b ** 2) * (x ** 2) + 1) ** 2))))
 
     @staticmethod
-    def step_function(value, derivate=False):
-        return 0 if value < 0 else 1
+    def direct_function(value, derivate=False):
+        return value
 
     def run(self, input):
         """
@@ -118,7 +125,7 @@ class EdgeDetector(object):
                 layer_errors.append(layer_error)
 
                 delta_weight = np.outer(
-                    layer_error, self.inputs[i]) * learn_rate
+                    layer_error, self.inputs[i]) * learn_rate * 10
 
                 weigth_change.append(delta_weight)
                 # self.weights[i] += delta_weight
@@ -126,7 +133,7 @@ class EdgeDetector(object):
         # Update weights
         for i in range(len(self.layout) - 1):
             self.weights[i] += weigth_change[(len(self.layout) - 2) - i]
-            # self.weights[i] -= self.weights[i] * learn_rate * 0.001
+            self.weights[i] -= self.weights[i] * learn_rate * 0.0001
 
         return error
 
@@ -176,12 +183,17 @@ class EdgeDetector(object):
         return errors
 
     def visualize(self):
-        for i in range(2):
-            KTimage.exporttiles(
-                self.weights[i],
-                self.width, self.height,
-                "/tmp/coco/obs_W_{}_{}.pgm".format(i + 1, i),
-                self.width, self.height)
+        KTimage.exporttiles(
+            self.weights[0],
+            self.width, self.height,
+            "/tmp/coco/obs_W_{}_{}.pgm".format(0 + 1, 0),
+            self.width, self.height)
+
+        KTimage.exporttiles(
+            self.weights[1].T,
+            self.width, self.height,
+            "/tmp/coco/obs_W_{}_{}.pgm".format(1 + 1, 1),
+            self.width, self.height)
 
         KTimage.exporttiles(self.inputs[0], self.width, self.height,
                             "/tmp/coco/obs_S_0.pgm")
@@ -203,7 +215,7 @@ def main():
 
         datenSatz.append([data, data])
 
-    edge.train_until_fit(datenSatz, 500, 0.1)
+    edge.train_until_fit(datenSatz, 500, 0.05)
 
     # size = PreSizer.IMAGE_SIZE
     # edge = EdgeDetector((size, size, size))
