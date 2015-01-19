@@ -1,0 +1,12 @@
+Ideen für Präsentation zu Zeichenerkennung:
+- Vergleichstabelle für erfolgreiche Erkenntnisrate bei unterschiedlich vielen Hidden Layern/Lernrate
+
+
+Must-have:
+- Motivation der Zeichenerkennung (z.B. Hausnummernerkennung, Schrifterkennung)
+- Frage: Auf welche Weise lässt sich das mit einem "haushaltsüblichen" (sprich: ¬Google-Serverfarm) neuronalen Netz lösen?
+- Grundlage: MLP
+- Funktionsweise der eigenen Lösung
+- Ergebnisse
+- Offene Fragen/Mögliche Verbesserungen
+- Fazit
