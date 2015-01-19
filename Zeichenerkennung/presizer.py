@@ -14,8 +14,8 @@ class PreSizer(object):
     """
 
     # Bildgröße mit der gearbeitet wird
-    IMAGE_WIDTH = 14
-    IMAGE_HEIGHT = 20
+    IMAGE_WIDTH = 20
+    IMAGE_HEIGHT = 30
     IMGE_FORM = (IMAGE_WIDTH, IMAGE_HEIGHT)
     IMAGE_SIZE = IMAGE_HEIGHT * IMAGE_WIDTH
 
