@@ -22,7 +22,7 @@ class Recognizer(object):
         # Das netzwerk zum erkennen von Zeichen
         self.recognizeNetwork = MultiLayerNetwork(
             layout=(PreSizer.IMAGE_SIZE,
-                    10,
+                    PreSizer.IMAGE_WIDTH,
                     len(Recognizer.DIGITS)),
             transfer_function=MultiLayerNetwork.sigmoid_function,
             last_transfer_function=MultiLayerNetwork.step_function,
@@ -108,7 +108,9 @@ def main():
         else:
             wrongCount += 1
 
-    print("correct: {}   wrong:{}".format(correctCount, wrongCount))
+    print("correct: {}   wrong:{}  --> {}%".
+          format(correctCount, wrongCount,
+                 (correctCount / (correctCount + wrongCount)) * 100))
 
 
 if __name__ == '__main__':
