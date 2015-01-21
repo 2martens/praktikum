@@ -50,14 +50,14 @@ class EdgeDetector(object):
 
     @staticmethod
     def transfer_function(x, derivate=False):
-        a = 0.8
-        b = 2
+        a = 0.5
+        b = 2.0
         if not derivate:
             #  f(x) = b (x - a x / (1 + b^2 x^2))
-            return b * (x - (a * x / (1 + ((b ** 2) * (x ** 2)))))
+            return b * (x - (a * x / (1.0 + ((b ** 2) * (x ** 2)))))
         else:
-            #  f'(x) = b (1 + a (b^2 x^2 - 1) / (b^2 x^2 + 1)2)
-            return b * (1 + (a * (((b ** 2) * (x ** 2) - 1) / (((b ** 2) * (x ** 2) + 1) ** 2))))
+            #  f'(x) = b (1 + a (b^2 x^2 - 1) / (b^2 x^2 + 1)^2)
+            return b * (1.0 + (a * (((b ** 2) * (x ** 2) - 1.0) / (((b ** 2) * (x ** 2) + 1.0) ** 2))))
 
     @staticmethod
     def direct_function(value, derivate=False):
