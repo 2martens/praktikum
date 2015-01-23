@@ -60,11 +60,50 @@ class PreSizer(object):
         # return image.histogram()
 
 
-def main():
-    print("create Folder with optimized images..")
+def moveImage(file):
+    image = Image.open(file)
+    imageList = []
+    for i in range(-5, 5):
+        if i != 0:
 
+            x = math.floor(image.size[0] / 2)
+            y = math.floor(image.size[1] / 2)
+
+            new = Image.new(image.mode, (image.size[0] * 2, image.size[1] * 2), (255, 255, 255))
+            new.paste(image, (x, y))
+
+            img = new.rotate(i * 2, 0, False)
+            x = img.crop((x, y, image.size[0] + x, image.size[1] + y))
+
+
+            # img = img.crop((80, 54, image.size[0] - 54, image.size[1] - 54))
+            img.load()
+            imageList.append(x)
+    return imageList
+
+
+def main():
     dataDir = "data"
+    genDataDir = "gen_data"
     optDataDir = "opt_data"
+
+    print("create Folder with generated images from data dir...")
+    try:
+        shutil.rmtree(genDataDir)
+    except FileNotFoundError:
+        pass
+
+    os.makedirs(genDataDir)
+
+    files = [x for x in os.listdir(dataDir)
+             if x.endswith(".jpg")]
+
+    for index, image in enumerate(files):
+        for i, img in enumerate(moveImage(dataDir + "/" + image)):
+            img.save("{}/{}_{}.jpg".
+                     format(genDataDir, files[index][:-3], i))
+
+    print("create Folder with optimized images..")
 
     try:
         shutil.rmtree(optDataDir)

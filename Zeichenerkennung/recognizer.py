@@ -23,7 +23,7 @@ class Recognizer(object):
         # Das netzwerk zum erkennen von Zeichen
         self.recognizeNetwork = MultiLayerNetwork(
             layout=(PreSizer.IMAGE_SIZE,
-                    PreSizer.IMAGE_WIDTH,
+                    PreSizer.IMAGE_HEIGHT * 2,
                     len(Recognizer.DIGITS)),
             transfer_function=MultiLayerNetwork.sigmoid_function,
             last_transfer_function=MultiLayerNetwork.theWinnerTakesItAll,
@@ -31,29 +31,32 @@ class Recognizer(object):
 
         self.isTrained = False
 
-    def train(self, folderpath):
+    def train(self, folderpaths, learnrate=0.1, maxtrains=800000):
         """
-        Trainiert das Netzwerk mit allen Bildern in folderpath
+        Trainiert das Netzwerk mit allen Bildern in den Ordnern von folderpaths
         Alle Bilder müssen auf .jpg enden und mit dem soll Zeichen Beginnen
         Bsp: "A_irgendwas.jpg" um den Buchstaben A zu lernen.
+
+        folderpaths - Eine liste von Ordnern
         """
 
-        files = [x for x in os.listdir(folderpath) if x.endswith(".jpg")]
         dataSet = []
+        for folderpath in folderpaths:
+            files = [x for x in os.listdir(folderpath) if x.endswith(".jpg")]
 
-        for image in files:
-            img = PreSizer.getOptimizedImage(folderpath + "/" + image)
-            data = PreSizer.getDataFromImage(img)
+            for image in files:
+                img = PreSizer.getOptimizedImage(folderpath + "/" + image)
+                data = PreSizer.getDataFromImage(img)
 
-            expected = np.zeros(len(Recognizer.DIGITS))
-            expected[Recognizer.DIGITS.find(image[0])] = 1
+                expected = np.zeros(len(Recognizer.DIGITS))
+                expected[Recognizer.DIGITS.find(image[0])] = 1
 
-            dataSet.append([data, expected])
+                dataSet.append([data, expected])
 
         self.outputFun("starting training")
 
         self.recognizeNetwork.train_until_fit(
-            dataSet, 1000, 0.1, 800000)
+            dataSet, 1000, learnrate, maxtrains)
         self.isTrained = True
 
     def decodedAnswer(self, result):
@@ -125,7 +128,7 @@ class Recognizer(object):
 
 def main():
     net = Recognizer(print)
-    net.train("data")
+    net.train(["data", "gen_data"], 0.1)
 
     testDataDir = "testData"
 

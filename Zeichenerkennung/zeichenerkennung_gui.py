@@ -9,7 +9,7 @@ class Gui(object):
 
     """Gui class"""
 
-    TRAIN_DATA = "data"
+    TRAIN_DATA = ["data", "gen_data"]
 
     DRAW_COLOR = (0, 0, 0)
     DRAW_WIDTH = 10
@@ -85,7 +85,7 @@ class Gui(object):
             if i < len(self.currentResults):
                 result = self.font.render(
                     "{} - {:.1f}%".format(self.currentResults[i][0],
-                                           self.currentResults[i][1] * 100),
+                                          self.currentResults[i][1] * 100),
                     True, Gui.MSG_COLOR)
                 self.msgArea.blit(result, (10, 100 + i * Gui.MSG_FONT_SIZE))
 
@@ -175,7 +175,8 @@ class Gui(object):
 
         if (len(inputString) > 0):
             timestr = time.strftime("%d%m%Y-%I%M%S")
-            dest = Gui.TRAIN_DATA + "/" + inputString + "_" + timestr + ".jpg"
+            dest = Gui.TRAIN_DATA[0] + "/" + \
+                inputString + "_" + timestr + ".jpg"
             shutil.copyfile(Gui.IMAGE_NAME, dest)
 
     def run(self):
