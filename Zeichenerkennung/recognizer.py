@@ -11,7 +11,7 @@ class Recognizer(object):
 
     # Das Netzwerk soll die Zahlen von 0 bis 9 und die Buchstaben von
     # A bis Z erkennen
-    DIGITS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    DIGITS = "0123456789abcdefghijklmnopqrstuvwxyz"
     # hier wird das Netz auf der Festplatte gespeichert
     NETWORK_PATH = "/tmp/Recognizer.npy"
 
@@ -90,7 +90,7 @@ class Recognizer(object):
             data = PreSizer.getDataFromImage(img)
         except AttributeError:
             print("empty image")
-            return "empty"
+            return []
         # img.show()
 
         prefun = self.recognizeNetwork.last_layer_transfer
