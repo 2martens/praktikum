@@ -27,6 +27,7 @@ class Gui(object):
         self.recognizer = Recognizer(self.showMsg)
 
         pygame.init()
+        pygame.display.set_caption("Zeichenerkennung")
         self.width = 600
         self.height = 400
 
