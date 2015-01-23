@@ -25,7 +25,7 @@ class Recognizer(object):
                     PreSizer.IMAGE_WIDTH,
                     len(Recognizer.DIGITS)),
             transfer_function=MultiLayerNetwork.sigmoid_function,
-            last_transfer_function=MultiLayerNetwork.step_function,
+            last_transfer_function=MultiLayerNetwork.theWinnerTakesItAll,
             output_function=outputFunction)
 
         self.isTrained = False

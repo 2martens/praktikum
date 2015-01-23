@@ -57,29 +57,45 @@ class MultiLayerNetwork(object):
     @staticmethod
     def sigmoid_function(value, derivate=False):
         if not derivate:
-            return (1 / (1 + np.exp(-value)))
+            def f(x): return (1 / (1 + np.exp(-x)))
         else:
-            return (value * (1 - value))
+            def f(x): return (x * (1 - x))
+
+        return np.array(list(map(f, value)))
 
     @staticmethod
-    def tanh_function(value, derivate=False):
+    def theWinnerTakesItAll(value, derivate=False):
         if not derivate:
-            return math.tanh(value)
+            index = np.argmax(value)
+            res = np.zeros(value.shape)
+            res[index] = 1
+            return res
         else:
-            return (1 - (value ** 2))
+            print("there is no derivate!")
 
     @staticmethod
     def step_function(value, derivate=False):
-        return 0 if value < 0 else 1
+        if not derivate:
+            def f(x): return 0 if x < 0 else 1
+            return np.array(list(map(f, value)))
+        else:
+            print("there is no derivate!")
 
     @staticmethod
     def round2_function(value, derivate=False):
         """ rounds to 2 digits after decimal point """
-        return np.around(value, 2)
+        if not derivate:
+            def f(x): return np.around(x, 2)
+            return np.array(list(map(f, value)))
+        else:
+            print("there is no derivate!")
 
     @staticmethod
     def direct_function(value, derivate=False):
-        return value
+        if not derivate:
+            return value
+        else:
+            return np.ones(value.shape)
 
     def calc(self, input):
         """
@@ -104,46 +120,47 @@ class MultiLayerNetwork(object):
             lastNetResult = np.dot(self.weights[i], lastNetResult)
             if i == len(self.layout) - 2:
                 # different activation function for last layer
-                lastNetResult = np.array(list(map(
-                    self.last_layer_transfer, np.nditer(lastNetResult))))
+                lastNetResult = self.last_layer_transfer(lastNetResult)
+                # lastNetResult = np.array(list(map(
+                #     self.last_layer_transfer, np.nditer(lastNetResult))))
             else:
-                # lastNetResult = self.layer_transfer(lastNetResult)
-                lastNetResult = np.array(list(map(
-                    self.layer_transfer, np.nditer(lastNetResult))))
+                lastNetResult = self.layer_transfer(lastNetResult)
+                # lastNetResult = np.array(list(map(
+                #     self.layer_transfer, np.nditer(lastNetResult))))
 
             self.outputs.append(lastNetResult)
 
         return lastNetResult
 
-    def backpropagate(self, error, last_layer=True, learn_rate=0.2):
-        # calc error
-        weigth_change = []
+    # def backpropagate(self, error, last_layer=True, learn_rate=0.2):
+    # calc error
+    #     weigth_change = []
 
-        layer_error = error
+    #     layer_error = error
 
-        for i in reversed(range(len(self.layout) - 1)):
-            # der letzte layer
-            if i == (len(self.layout) - 2):
-                layer_error = error
-            else:
-                layer_error = np.dot(layer_error,
-                                     self.weights[i + 1])[:-1]
-                layer_error *= self.layer_transfer(self.outputs[i], True)
+    #     for i in reversed(range(len(self.layout) - 1)):
+    # der letzte layer
+    #         if i == (len(self.layout) - 2):
+    #             layer_error = error
+    #         else:
+    #             layer_error = np.dot(layer_error,
+    #                                  self.weights[i + 1])[:-1]
+    #             layer_error *= self.layer_transfer(self.outputs[i], True)
 
-            delta_weight = np.outer(
-                layer_error, self.inputs[i]) * learn_rate
+    #         delta_weight = np.outer(
+    #             layer_error, self.inputs[i]) * learn_rate
 
-            weigth_change.append(delta_weight)
-            #self.weights[i] += delta_weight
+    #         weigth_change.append(delta_weight)
+    # self.weights[i] += delta_weight
 
-        # Update weights
-        for i in range(len(self.layout) - 1):
-            self.weights[i] += weigth_change[(len(self.layout) - 2) - i]
+    # Update weights
+    #     for i in range(len(self.layout) - 1):
+    #         self.weights[i] += weigth_change[(len(self.layout) - 2) - i]
 
-        layer_error = np.dot(layer_error,
-                             self.weights[0])[:-1]
-        layer_error *= self.layer_transfer(self.inputs[0][:-1], True)
-        return layer_error
+    #     layer_error = np.dot(layer_error,
+    #                          self.weights[0])[:-1]
+    #     layer_error *= self.layer_transfer(self.inputs[0][:-1], True)
+    #     return layer_error
 
     def train(self, training_data, expected, learn_rate=0.2):
         """
@@ -169,18 +186,20 @@ class MultiLayerNetwork(object):
                     layer_error, self.inputs[-1]) * learn_rate
 
                 weigth_change.append(delta_weight)
-                #self.weights[-1] += delta_weight
+                # self.weights[-1] += delta_weight
             else:
                 layer_error = np.dot(layer_errors[-1],
                                      self.weights[i + 1])[:-1]
                 layer_error *= self.layer_transfer(self.outputs[i], True)
+                # layer_error *= np.array(list(map(lambda x:
+                #                                  self.layer_transfer(x, True), self.outputs[i])))
                 layer_errors.append(layer_error)
 
                 delta_weight = np.outer(
                     layer_error, self.inputs[i]) * learn_rate
 
                 weigth_change.append(delta_weight)
-                #self.weights[i] += delta_weight
+                # self.weights[i] += delta_weight
 
         # Update weights
         for i in range(len(self.layout) - 1):
@@ -257,7 +276,7 @@ if __name__ == '__main__':
 
     network = MultiLayerNetwork(
         layout=(2, 2, 1),
-        transfer_function=MultiLayerNetwork.tanh_function,
+        transfer_function=MultiLayerNetwork.sigmoid_function,
         last_transfer_function=MultiLayerNetwork.step_function)
 
     errors = []
