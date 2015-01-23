@@ -2,6 +2,7 @@ from multi_layer import MultiLayerNetwork
 from presizer import PreSizer
 import numpy as np
 import os
+import operator
 
 
 class Recognizer(object):
@@ -81,6 +82,45 @@ class Recognizer(object):
 
     def saveNetwork(self):
         self.recognizeNetwork.saveWeights(Recognizer.NETWORK_PATH)
+
+    def getResults(self, imgagePath):
+        img = PreSizer.getOptimizedImage(imgagePath)
+        # der Presizer gibt wenn das bild leer ist kein image Type zurück
+        try:
+            data = PreSizer.getDataFromImage(img)
+        except AttributeError:
+            print("empty image")
+            return "empty"
+        # img.show()
+
+        prefun = self.recognizeNetwork.last_layer_transfer
+        self.recognizeNetwork.last_layer_transfer = Recognizer.toPercentage
+
+        result = self.recognizeNetwork.calc(data)
+        self.recognizeNetwork.last_layer_transfer = prefun
+
+        probabilities = {}
+        for index, prob in enumerate(result):
+            if prob > 0:
+                probabilities[Recognizer.DIGITS[index]] = prob
+
+        probSorted = sorted(
+            probabilities.items(), key=operator.itemgetter(1), reverse=True)
+
+        return probSorted
+
+    @staticmethod
+    def toPercentage(value):
+        # minValue = np.amin(value)
+        # if minValue < 0:
+            # value = np.array(list(map(lambda x: x - minValue, value)))
+        # s = np.sum(value)
+        s = 0
+        for x in value:
+            if x >= 0:
+                s += x
+
+        return np.array(list(map(lambda x: x / s, value)))
 
 
 def main():

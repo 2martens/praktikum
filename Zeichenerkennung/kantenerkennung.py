@@ -4,6 +4,7 @@ import numpy as np
 import KTimage
 import random
 import os
+import math
 
 
 class EdgeDetector(object):
@@ -26,14 +27,17 @@ class EdgeDetector(object):
 
         # init weights
         self.weights = []
-        for i in range(len(self.layout) - 1):
-            start_weights = np.random.uniform(
-                -0.1, +0.1, (self.layout[i + 1], self.layout[i]))
+        # for i in range(len(self.layout) - 1):
+        #     start_weights = np.random.uniform(
+        #         -0.1, +0.1, (self.layout[i + 1], self.layout[i]))
 
-            self.weights.append(start_weights)
+        #     self.weights.append(start_weights)
 
-        self.last_layer_transfer = EdgeDetector.transfer_function
-        self.layer_transfer = EdgeDetector.direct_function
+        self.weights.append(np.random.uniform(-0.1, 0.1, (size, size)))
+        self.weights.append(np.random.uniform(-0.1, 0.1, (size, size)))
+
+        self.layer_transfer = EdgeDetector.transfer_function
+        self.last_layer_transfer = EdgeDetector.theWinnerTakesItAll
 
         # sicherstellen das der Ordner für visualize vorhanden ist
         try:
@@ -41,7 +45,6 @@ class EdgeDetector(object):
         except FileExistsError:
             pass
 
-    @staticmethod
     def sigmoid_function(value, derivate=False):
         if not derivate:
             return (1 / (1 + np.exp(-value)))
@@ -103,37 +106,59 @@ class EdgeDetector(object):
         self.run(training_data)
 
         # calc error
-        layer_errors = []
-        weigth_change = []
+        # layer_errors = []
+        # weigth_change = []
         error = 0.5 * sum((np.add(expected, -self.outputs[-1]) ** 2))
 
-        for i in reversed(range(len(self.layout) - 1)):
-            # der letzte layer
-            if i == (len(self.layout) - 2):
-                layer_error = np.add(expected, -self.outputs[-1])
-                layer_errors.append(layer_error)
+        # for i in reversed(range(len(self.layout) - 1)):
+        # der letzte layer
+        #     if i == (len(self.layout) - 2):
+        #         layer_error = np.add(expected, -self.outputs[-1])
+        #         layer_errors.append(layer_error)
 
-                delta_weight = np.outer(
-                    layer_error, self.inputs[-1]) * learn_rate
+        #         delta_weight = np.outer(
+        #             layer_error, self.inputs[-1]) * learn_rate
 
-                weigth_change.append(delta_weight)
-                # self.weights[-1] += delta_weight
-            else:
-                layer_error = np.dot(layer_errors[-1],
-                                     self.weights[i + 1])
-                layer_error *= self.layer_transfer(self.outputs[i], True)
-                layer_errors.append(layer_error)
+        #         weigth_change.append(delta_weight)
+        # self.weights[-1] += delta_weight
+        #     else:
+        #         layer_error = np.dot(layer_errors[-1],
+        #                              self.weights[i + 1])
+        #         layer_error *= self.layer_transfer(self.outputs[i], True)
+        #         layer_errors.append(layer_error)
 
-                delta_weight = np.outer(
-                    layer_error, self.inputs[i]) * learn_rate * 10
+        #         delta_weight = np.outer(
+        #             layer_error, self.inputs[i]) * learn_rate * 10
 
-                weigth_change.append(delta_weight)
-                # self.weights[i] += delta_weight
+        #         weigth_change.append(delta_weight)
+        # self.weights[i] += delta_weight
+
+        # Der letzte Layer
+        layer_error1 = np.add(expected, -self.outputs[1])
+        delta_weight1 = np.outer(layer_error1, self.inputs[1]) * learn_rate
+
+        # Hidden layer
+        back = np.array(
+            list(map(lambda x: self.layer_transfer(x, True), self.outputs[0])))
+        layer_error0 = back
+        layer_error0 *= np.dot(layer_error1, self.weights[1])
+        delta_weight0 = np.outer(layer_error0, self.inputs[0]) * learn_rate
 
         # Update weights
-        for i in range(len(self.layout) - 1):
-            self.weights[i] += weigth_change[(len(self.layout) - 2) - i]
-            self.weights[i] -= self.weights[i] * learn_rate * 0.0001
+        self.weights[0] += delta_weight0
+        self.weights[1] += delta_weight1
+
+        self.weights[0] -= self.weights[0] * learn_rate * 0.001
+        self.weights[1] -= self.weights[1] * learn_rate * 0.001
+
+        if math.isnan(self.weights[0][0][0]):
+            print("---------------------------------------------")
+            print(layer_error1, layer_error0, back)
+            print("---------------------------------------------")
+
+        # for i in range(len(self.layout) - 1):
+        #     self.weights[i] += weigth_change[(len(self.layout) - 2) - i]
+        #     self.weights[i] -= self.weights[i] * learn_rate * 0.0001
 
         return error
 
@@ -183,6 +208,7 @@ class EdgeDetector(object):
         return errors
 
     def visualize(self):
+        # print(self.weights)
         KTimage.exporttiles(
             self.weights[0],
             self.width, self.height,
@@ -215,7 +241,7 @@ def main():
 
         datenSatz.append([data, data])
 
-    edge.train_until_fit(datenSatz, 500, 0.05)
+    edge.train_until_fit(datenSatz, 500, 0.1, 50000000)
 
     # size = PreSizer.IMAGE_SIZE
     # edge = EdgeDetector((size, size, size))

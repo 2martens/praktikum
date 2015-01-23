@@ -44,7 +44,7 @@ class Gui(object):
         self.keyMapArea = self.getKeyMapSurface()
 
         self.drawStart = pygame.mouse.get_pos()
-        self.currentResult = ""
+        self.currentResults = []
         self.running = True
 
         self.updateStatus()
@@ -77,12 +77,18 @@ class Gui(object):
         self.msgArea.fill(Gui.MSG_BACKGROUND_COLOR)
 
         trained = self.font.render(
-            "Trainiert: {}".format(self.recognizer.isTrained), True, Gui.MSG_COLOR)
+            "Trainiert: {}".format(self.recognizer.isTrained),
+            True, Gui.MSG_COLOR)
 
-        result = self.font.render(
-            "Ergebnis: {}".format(self.currentResult), True, Gui.MSG_COLOR)
-        self.msgArea.blit(trained, (10, 148))
-        self.msgArea.blit(result, (10, 170))
+        for i in range(3):
+            if i < len(self.currentResults):
+                result = self.font.render(
+                    "{} - {:.1f}%".format(self.currentResults[i][0],
+                                           self.currentResults[i][1] * 100),
+                    True, Gui.MSG_COLOR)
+                self.msgArea.blit(result, (10, 100 + i * Gui.MSG_FONT_SIZE))
+
+        self.msgArea.blit(trained, (10, 170))
 
     def showMsg(self, msg):
         self.handleEvents()
@@ -110,7 +116,8 @@ class Gui(object):
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 pygame.image.save(self.drawArea, Gui.IMAGE_NAME)
-                self.currentResult = self.recognizer.getResult(Gui.IMAGE_NAME)
+                self.currentResults = self.recognizer.getResults(
+                    Gui.IMAGE_NAME)
                 self.updateStatus()
 
             elif event.type == pygame.KEYDOWN:
