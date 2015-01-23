@@ -3,12 +3,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-import math
+import KTimage
+import os
 
 
 class MultiLayerNetwork(object):
 
     """ A Multi Layer Perceptron """
+
+    KTIMAGE_DATA = "/tmp/coco"
 
     def __init__(self, layout, **options):
         """
@@ -24,6 +27,7 @@ class MultiLayerNetwork(object):
         super(MultiLayerNetwork, self).__init__()
 
         self.layout = layout
+        self.numWeights = len(layout) - 1
         self.layer_transfer = MultiLayerNetwork.sigmoid_function
         self.last_layer_transfer = MultiLayerNetwork.step_function
 
@@ -41,12 +45,18 @@ class MultiLayerNetwork(object):
 
         # init weights
         self.weights = []
-        for i in range(len(layout) - 1):
+        for i in range(self.numWeights):
             # plus 1 for bias
             start_weights = np.random.uniform(
                 -0.1, +0.1, (layout[i + 1], layout[i] + 1))
 
             self.weights.append(start_weights)
+
+        # sicherstellen das der Ordner für visualize vorhanden ist
+        try:
+            os.makedirs(MultiLayerNetwork.KTIMAGE_DATA)
+        except FileExistsError:
+            pass
 
     def get_weights(self):
         return self.weights
@@ -132,6 +142,15 @@ class MultiLayerNetwork(object):
 
         return lastNetResult
 
+    def visualize(self):
+        # print(self.weights)
+        for i in range(self.numWeights):
+            KTimage.exporttiles(
+                self.weights[i],
+                self.layout[i + 1], self.layout[i] + 1,
+                MultiLayerNetwork.KTIMAGE_DATA + "/obs_W_{}_{}.pgm".
+                format(i + 1, i))
+
     # def backpropagate(self, error, last_layer=True, learn_rate=0.2):
     # calc error
     #     weigth_change = []
@@ -192,7 +211,7 @@ class MultiLayerNetwork(object):
                                      self.weights[i + 1])[:-1]
                 layer_error *= self.layer_transfer(self.outputs[i], True)
                 # layer_error *= np.array(list(map(lambda x:
-                #                                  self.layer_transfer(x, True), self.outputs[i])))
+                # self.layer_transfer(x, True), self.outputs[i])))
                 layer_errors.append(layer_error)
 
                 delta_weight = np.outer(
