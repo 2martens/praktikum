@@ -42,16 +42,20 @@ class Recognizer(object):
 
         dataSet = []
         for folderpath in folderpaths:
-            files = [x for x in os.listdir(folderpath) if x.endswith(".jpg")]
+            try:
+                files = [x for x in os.listdir(folderpath)
+                         if x.endswith(".jpg")]
 
-            for image in files:
-                img = PreSizer.getOptimizedImage(folderpath + "/" + image)
-                data = PreSizer.getDataFromImage(img)
+                for image in files:
+                    img = PreSizer.getOptimizedImage(folderpath + "/" + image)
+                    data = PreSizer.getDataFromImage(img)
 
-                expected = np.zeros(len(Recognizer.DIGITS))
-                expected[Recognizer.DIGITS.find(image[0])] = 1
+                    expected = np.zeros(len(Recognizer.DIGITS))
+                    expected[Recognizer.DIGITS.find(image[0])] = 1
 
-                dataSet.append([data, expected])
+                    dataSet.append([data, expected])
+            except FileNotFoundError:
+                print("no such folder \"{}\" -> ignoring".format(folderpath))
 
         self.outputFun("starting training")
 
