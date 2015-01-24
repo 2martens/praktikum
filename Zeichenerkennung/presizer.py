@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from PIL import Image, ImageChops
+from random import uniform
 import math
 import os
 import shutil
@@ -37,9 +38,7 @@ class PreSizer(object):
             empty = Image.new(image.mode,
                               (PreSizer.IMAGE_WIDTH, PreSizer.IMAGE_HEIGHT),
                               bg_color)
-            empty.paste(content,
-                        (math.floor((PreSizer.IMAGE_WIDTH - width) / 2),
-                         math.floor((PreSizer.IMAGE_HEIGHT - heigth) / 2)))
+            empty = centerImageinImage(empty, content)
             return empty
 
     @staticmethod
@@ -60,23 +59,44 @@ class PreSizer(object):
         # return image.histogram()
 
 
+def centerImageinImage(base, image):
+    """ base muss größer sein als image """
+    bWidth, bHeight = base.size
+    iWidht, iHeight = image.size
+    base.paste(image, (math.floor((bWidth - iWidht) / 2),
+                       math.floor((bHeight - iHeight) / 2)))
+
+    return base
+
+
 def moveImage(file):
+    """
+    Erstellt aus einem Bild eine Liste von Bildern,
+    indem das original gedreht und skaliert wird
+    """
     image = Image.open(file)
     imageList = []
-    for i in range(-5, 5):
+
+    width, heigth = image.size
+
+    for i in range(-2, 3):
         if i != 0:
 
-            x = math.floor(image.size[0] / 2)
-            y = math.floor(image.size[1] / 2)
+            scale = uniform(0.6, 1.3)
+            img = image.resize((math.floor(width * scale),
+                                math.floor(heigth * scale)))
 
-            new = Image.new(image.mode, (image.size[0] * 2, image.size[1] * 2), (255, 255, 255))
-            new.paste(image, (x, y))
+            x = math.floor(width / 2)
+            y = math.floor(heigth / 2)
 
-            img = new.rotate(i * 2, 0, False)
-            x = img.crop((x, y, image.size[0] + x, image.size[1] + y))
+            new = Image.new(
+                image.mode, (width * 2, heigth * 2), (255, 255, 255))
+            new = centerImageinImage(new, img)
 
+            img = new.rotate(i * 4, 0, False)
+            x = img.crop((x, y, width + x, heigth + y))
 
-            # img = img.crop((80, 54, image.size[0] - 54, image.size[1] - 54))
+            # img = img.crop((80, 54, image.width - 54, image.heigth - 54))
             img.load()
             imageList.append(x)
     return imageList
