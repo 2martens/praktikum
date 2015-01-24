@@ -64,6 +64,9 @@ class Recognizer(object):
         self.isTrained = True
 
     def decodedAnswer(self, result):
+        """
+        Mappt das Ergebnis des Netzes auf die Tatsächlichen Zeichen zurück.
+        """
         data = list(result)
         if 1 in data:
             return Recognizer.DIGITS[data.index(1)]
@@ -71,6 +74,9 @@ class Recognizer(object):
             return "not classified"
 
     def getResult(self, imgagePath):
+        """
+        Gibt das Ergebnis mit der Größten wahrscheinlichkeit zurück.
+        """
         img = PreSizer.getOptimizedImage(imgagePath)
         # der Presizer gibt wenn das bild leer ist kein image Type zurück
         try:
@@ -78,7 +84,6 @@ class Recognizer(object):
         except AttributeError:
             print("empty image")
             return "empty"
-        # img.show()
 
         result = self.recognizeNetwork.calc(data)
         return self.decodedAnswer(result)
@@ -91,6 +96,11 @@ class Recognizer(object):
         self.recognizeNetwork.saveWeights(Recognizer.NETWORK_PATH)
 
     def getResults(self, imgagePath):
+        """
+        Gibt eine sortierte Liste bestehend aus Zeichen und
+        Wahrscheinlichkeit zurück.
+        Bsp. [('a', 0.35), ('1', 0.135)]
+        """
         img = PreSizer.getOptimizedImage(imgagePath)
         # der Presizer gibt wenn das bild leer ist kein image Type zurück
         try:
@@ -98,7 +108,6 @@ class Recognizer(object):
         except AttributeError:
             print("empty image")
             return []
-        # img.show()
 
         prefun = self.recognizeNetwork.last_layer_transfer
         self.recognizeNetwork.last_layer_transfer = Recognizer.toPercentage
@@ -118,9 +127,13 @@ class Recognizer(object):
 
     @staticmethod
     def toPercentage(value):
+        """
+        Ersetzt die theWinnerTakesItAll Funktion um nicht nur das Größte
+        Ergebnis anzugeben sondern das Relative zur Summe aller.
+        """
         # minValue = np.amin(value)
         # if minValue < 0:
-            # value = np.array(list(map(lambda x: x - minValue, value)))
+        #    value = np.array(list(map(lambda x: x - minValue, value)))
         # s = np.sum(value)
         s = 0
         for x in value:

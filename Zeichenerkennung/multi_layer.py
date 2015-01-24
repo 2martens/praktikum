@@ -19,9 +19,9 @@ class MultiLayerNetwork(object):
         @param layout A tupel describing the number of neurons
                       per layer [inputsize, hid1, hid2,..,out]
         Extra options:
-        transfer_function
-        last_transfer_function
-        output_function
+        transfer_function       - default sigmoid_function
+        last_transfer_function  - default step_function
+        output_function         - default print
         """
 
         super(MultiLayerNetwork, self).__init__()
@@ -121,7 +121,6 @@ class MultiLayerNetwork(object):
 
         for i in range(len(self.layout) - 1):
             # append bias
-            # self.outputFun(lastNetResult)
             lastNetResult = np.hstack((lastNetResult, [1]))
 
             self.inputs.append(lastNetResult)
@@ -131,12 +130,8 @@ class MultiLayerNetwork(object):
             if i == len(self.layout) - 2:
                 # different activation function for last layer
                 lastNetResult = self.last_layer_transfer(lastNetResult)
-                # lastNetResult = np.array(list(map(
-                #     self.last_layer_transfer, np.nditer(lastNetResult))))
             else:
                 lastNetResult = self.layer_transfer(lastNetResult)
-                # lastNetResult = np.array(list(map(
-                #     self.layer_transfer, np.nditer(lastNetResult))))
 
             self.outputs.append(lastNetResult)
 
@@ -150,36 +145,6 @@ class MultiLayerNetwork(object):
                 self.layout[i + 1], self.layout[i] + 1,
                 MultiLayerNetwork.KTIMAGE_DATA + "/obs_W_{}_{}.pgm".
                 format(i + 1, i))
-
-    # def backpropagate(self, error, last_layer=True, learn_rate=0.2):
-    # calc error
-    #     weigth_change = []
-
-    #     layer_error = error
-
-    #     for i in reversed(range(len(self.layout) - 1)):
-    # der letzte layer
-    #         if i == (len(self.layout) - 2):
-    #             layer_error = error
-    #         else:
-    #             layer_error = np.dot(layer_error,
-    #                                  self.weights[i + 1])[:-1]
-    #             layer_error *= self.layer_transfer(self.outputs[i], True)
-
-    #         delta_weight = np.outer(
-    #             layer_error, self.inputs[i]) * learn_rate
-
-    #         weigth_change.append(delta_weight)
-    # self.weights[i] += delta_weight
-
-    # Update weights
-    #     for i in range(len(self.layout) - 1):
-    #         self.weights[i] += weigth_change[(len(self.layout) - 2) - i]
-
-    #     layer_error = np.dot(layer_error,
-    #                          self.weights[0])[:-1]
-    #     layer_error *= self.layer_transfer(self.inputs[0][:-1], True)
-    #     return layer_error
 
     def train(self, training_data, expected, learn_rate=0.2):
         """
@@ -205,20 +170,16 @@ class MultiLayerNetwork(object):
                     layer_error, self.inputs[-1]) * learn_rate
 
                 weigth_change.append(delta_weight)
-                # self.weights[-1] += delta_weight
             else:
                 layer_error = np.dot(layer_errors[-1],
                                      self.weights[i + 1])[:-1]
                 layer_error *= self.layer_transfer(self.outputs[i], True)
-                # layer_error *= np.array(list(map(lambda x:
-                # self.layer_transfer(x, True), self.outputs[i])))
                 layer_errors.append(layer_error)
 
                 delta_weight = np.outer(
                     layer_error, self.inputs[i]) * learn_rate
 
                 weigth_change.append(delta_weight)
-                # self.weights[i] += delta_weight
 
         # Update weights
         for i in range(len(self.layout) - 1):
@@ -274,6 +235,10 @@ class MultiLayerNetwork(object):
         self.outputFun("weights saved")
 
     def loadWeights(self, filepath):
+        """
+        Lädt die gespeicherten Gewichte aber nich das Layout des Netzes.
+        Dieses muss vorher erstellt werden
+        """
         succeeded = False
         try:
             self.weights = np.load(filepath)
@@ -298,18 +263,8 @@ if __name__ == '__main__':
         transfer_function=MultiLayerNetwork.sigmoid_function,
         last_transfer_function=MultiLayerNetwork.step_function)
 
-    errors = []
-
-    # data, result = random.choice(training_data)
-    # network.train(data, result, 1)
-
     errors = network.train_until_fit(training_data, 1000, 0.2, 500000)
 
-    # for i in range(10000):
-    #     data, result = random.choice(training_data)
-    #     print(data, result)
-        # errors.append(network.train(data, result, 0.2))
-    # print(network.weights)
     for data, __ in training_data:
         result = network.calc(data)
         print("{} -> {}".format(data, result))
