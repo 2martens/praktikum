@@ -23,7 +23,7 @@ class Recognizer(object):
         # Das netzwerk zum erkennen von Zeichen
         self.recognizeNetwork = MultiLayerNetwork(
             layout=(PreSizer.IMAGE_SIZE,
-                    PreSizer.IMAGE_HEIGHT * 2,
+                    PreSizer.IMAGE_HEIGHT,
                     len(Recognizer.DIGITS)),
             transfer_function=MultiLayerNetwork.sigmoid_function,
             last_transfer_function=MultiLayerNetwork.theWinnerTakesItAll,
@@ -168,9 +168,12 @@ def main():
         else:
             wrongCount += 1
 
+    percent = (correctCount / (correctCount + wrongCount)) * 100
     print("correct: {}   wrong:{}  --> {}%".
-          format(correctCount, wrongCount,
-                 (correctCount / (correctCount + wrongCount)) * 100))
+          format(correctCount, wrongCount, percent))
+
+    if percent > 95:
+        net.saveNetwork()
 
 
 if __name__ == '__main__':
