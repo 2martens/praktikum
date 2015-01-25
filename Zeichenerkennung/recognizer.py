@@ -13,7 +13,7 @@ class Recognizer(object):
     # A bis Z erkennen
     DIGITS = "0123456789abcdefghijklmnopqrstuvwxyz"
     # hier wird das Netz auf der Festplatte gespeichert
-    NETWORK_PATH = "/tmp/Recognizer.npy"
+    NETWORK_PATH = "Recognizer.npy"
 
     def __init__(self, outputFunction=print):
         super(Recognizer, self).__init__()
