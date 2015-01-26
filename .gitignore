@@ -57,3 +57,4 @@ target/
 SARSA.py
 current.jpg
 Zeichenerkennung/opt_data/
+*.pdf
