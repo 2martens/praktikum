@@ -240,9 +240,9 @@
 \begin{frame}
 	\frametitle{Aufbau}
 	\begin{itemize}
-		\item Grundlage ist MLP
-		\item Recognizer, der Ziffern aus Daten erkennt
+		\item Grundlage ist ein MLP
 		\item Presizer, der die Bilddaten in passendere Größe umwandelt
+		\item Recognizer, der Ziffern aus Daten erkennt
 		\item GUI, zur Eingabe von Test- und Trainingsdaten
 	\end{itemize}
 \end{frame}
@@ -250,8 +250,9 @@
 \begin{frame}
 	\frametitle{Recognizer}
 	\begin{itemize}
-		\item Eine versteckte Schicht
-		\item Winner takes it all zum Trainieren
+		\item Nutzt ein MLP mit einer versteckten Schicht
+		\item Ausgabearray der Länge der Möglichen Zeichen
+		\item Letzte Aktivierungsfunktion: Winner takes it all
 		\begin{itemize}
 			\item Später Anteile an der Gesamtsumme
 		\end{itemize}
@@ -265,6 +266,7 @@
 	\begin{itemize}
 		\item Eingabe zentrieren und skalieren \\
 		\includegraphics[width=8cm]{src/presize.eps}
+		\item Grayscale und Daten auf 0 und 1 "herunterbrechen"
 	\end{itemize}
 \end{frame}
 
