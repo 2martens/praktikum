@@ -1,0 +1,65 @@
+\documentclass[a4paper]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Languages:
+
+% Falls die Ausarbeitung in Deutsch erfolgt:
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+%\usepackage[latin1]{inputenc}
+\usepackage[utf8]{inputenc}
+\selectlanguage{ngerman}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Meta informations:
+\newcommand{\trauthor}{Dennis Fölster, Jim Martens}
+\newcommand{\trtype}{} %{Proseminar} %{Seminar} %{Workshop}
+\newcommand{\trcourse}{Praktikum Neuronale Netze}
+\newcommand{\trtitle}{Zeichenerkennung mit Neuronalen Netzen}
+\newcommand{\trmatrikelnummer}{} %
+\newcommand{\tremail}{3foelste@inf, 2martens@inf}
+\newcommand{\trinstitute}{Dept. Informatik -- Knowledge Technology, WTM}
+\newcommand{\trwebsiteordate}{\url{http://www2.informatik.uni-hamburg.de/wtm/}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\title{\trtitle}
+\author{\trauthor}
+\date{\today}
+
+
+\begin{document}
+	\maketitle
+	
+	\section{MultiLayerNetwork, multi\_layer.py}
+		Bei der Klasse MultiLayerNetwork handelt es sich um ein einstellbares MLP. 
+		Zwingend angegeben werden muss nur der Parameter layout. Hierbei Handelt es sich 
+		um ein Tupel das jeweils die Größe der Layer Beschreibt. Bei (4, 3, 1) wird
+		dann Beispielsweise ein Netzwerk mit 4 Eingabe-, 3 Hidden- und einem Ausgabeneuron 
+		erzeugt. Der zweite Parameter **options nimmt alle weiteren Parameter die Übergeben
+		werden als ein Dictionionary auf. Parameter die ausgewertet werden sind u.A. transfer\_function
+		und last\_transfer\_function. Beide erwarten das ihnen eine Funktion übergeben wird, welche dann
+		jeweils als Aktivierungsfunktion zwischen den verschiedenen Layern verwendet wird.
+		Innerhalb der Klasse MultiLayerNetwork wurden bereits einige Transferfunktionen definiert,
+		wie etwa die sigmoid\_function welche verwendet werden können. Diese sind dabei als static definiert
+		damit sie bereits der \_\_init\_\_ Methode übergeben werden können. Alternativ hätten diese Funktionen
+		auch einfach außerhalb der KLasse definiert werden können, wären dann beim import der Klasse jedoch nicht vorhanden.
+		Es können jedoch belibiege Funktionen als Parameter übergeben werden. Vorraussetzung ist jedoch das diese als Eingabe
+		ein Numpy-Array erwarten und auch wieder eins zurück geben. \\
+
+		Über die Methode calc(input) wird die Eingabe über alle Layer vorwärts propagiert und die Ausgabe des letzten Layers 
+		zurück gegeben. Da unser Mlp mit einem Bias arbeitet, wird für jede Layereingabe noch eine eins angehangen.
+		Außerdem wird jede Layer ein und Ausgabe gespeichert, da diese fürs eventuelle zurück propagieren benötigt wird.
+		Mit der Methode train, die eine Eingabe und das gewünschte Ergebnis erwartet, wird das Netz trainiert.
+		Zuerst wird dafür calc Aufgerufen und dann mittels dem gewünschtem Ergebnis und den gespeicherten Gewichten der
+		Fehler zurückpropagiert. 
+		Die Methode train\_until\_fit ermöglicht es gleich ganze Datensätze zu trainieren. Sie erwartet ein Array aus 
+		Paaren von Eingabe und gewünschter Ausgabe. Mit diesen Daten wird das Netz dann so lange trainiert, bis alle
+		Eingaben das gewünschte Ergebnis liefern oder die Anzahl der maximalen Trainingsschritte überschritten ist. 
+
+	\section{Presizer}
+		   
+
+	
+\end{document}
