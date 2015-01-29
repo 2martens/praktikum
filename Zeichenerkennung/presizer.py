@@ -132,12 +132,14 @@ def main():
 
     os.makedirs(optDataDir)
 
-    files = [x for x in os.listdir(dataDir)
-             if x.endswith(".jpg")]
+    for directory in [dataDir, genDataDir]:
 
-    for index, image in enumerate(files):
-        img = PreSizer.getOptimizedImage(dataDir + "/" + image)
-        img.save("{}/{}".format(optDataDir, files[index]))
+        files = [x for x in os.listdir(directory)
+                 if x.endswith(".jpg")]
+
+        for index, image in enumerate(files):
+            img = PreSizer.getOptimizedImage(directory + "/" + image)
+            img.save("{}/{}".format(optDataDir, files[index]))
 
 if __name__ == '__main__':
     main()

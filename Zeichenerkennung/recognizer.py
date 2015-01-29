@@ -23,7 +23,7 @@ class Recognizer(object):
         # Das netzwerk zum erkennen von Zeichen
         self.recognizeNetwork = MultiLayerNetwork(
             layout=(PreSizer.IMAGE_SIZE,
-                    PreSizer.IMAGE_HEIGHT,
+                    PreSizer.IMAGE_HEIGHT * 2,
                     len(Recognizer.DIGITS)),
             transfer_function=MultiLayerNetwork.sigmoid_function,
             last_transfer_function=MultiLayerNetwork.theWinnerTakesItAll,
