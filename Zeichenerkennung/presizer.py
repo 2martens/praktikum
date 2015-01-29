@@ -1,62 +1,59 @@
 #!/usr/bin/python
 
+"""
+Kümmert sich um die Vorverarbeitung der Bilder bevor sie dem
+Netz übergeben werden.
+"""
+
 from PIL import Image, ImageChops
 from random import uniform
 import math
 import os
 import shutil
 
+# Bildgröße mit der gearbeitet wird
+IMAGE_WIDTH = 20
+IMAGE_HEIGHT = 30
+IMAGE_FORM = (IMAGE_WIDTH, IMAGE_HEIGHT)
+IMAGE_SIZE = IMAGE_HEIGHT * IMAGE_WIDTH
 
-class PreSizer(object):
 
+def trim(image):
+    bg_color = image.getpixel((0, 0))
+    if (bg_color != 255):
+        print(bg_color)
+    bg = Image.new(image.mode, image.size, bg_color)
+    diff = ImageChops.difference(image, bg)
+    diff = ImageChops.add(diff, diff, 2.0, -100)
+    bbox = diff.getbbox()
+    if bbox:
+        content = image.crop(bbox)
+        content.thumbnail(IMAGE_FORM)
+
+        width, heigth = content.size
+        # immer auf die selbe größe packen mit text in der Mitte
+        empty = Image.new(image.mode,
+                          (IMAGE_WIDTH, IMAGE_HEIGHT),
+                          bg_color)
+        empty = centerImageinImage(empty, content)
+        return empty
+
+
+def getOptimizedImage(imagePath):
     """
-    Schneidet ein Bild auf die richtige größe,
-    bevor es einem Netzwerk übergeben wird
+    lädt das Bild von der Festplatte und Schneidet es in die Richtige größe
+    zoomt auf den Content
     """
+    image = Image.open(imagePath)
+    image = image.convert("L")
+    return trim(image)
 
-    # Bildgröße mit der gearbeitet wird
-    IMAGE_WIDTH = 20
-    IMAGE_HEIGHT = 30
-    IMGE_FORM = (IMAGE_WIDTH, IMAGE_HEIGHT)
-    IMAGE_SIZE = IMAGE_HEIGHT * IMAGE_WIDTH
 
-    @staticmethod
-    def trim(image):
-        bg_color = image.getpixel((0, 0))
-        if (bg_color != 255):
-            print(bg_color)
-        bg = Image.new(image.mode, image.size, bg_color)
-        diff = ImageChops.difference(image, bg)
-        diff = ImageChops.add(diff, diff, 2.0, -100)
-        bbox = diff.getbbox()
-        if bbox:
-            content = image.crop(bbox)
-            content.thumbnail(PreSizer.IMGE_FORM)
-
-            width, heigth = content.size
-            # immer auf die selbe größe packen mit text in der Mitte
-            empty = Image.new(image.mode,
-                              (PreSizer.IMAGE_WIDTH, PreSizer.IMAGE_HEIGHT),
-                              bg_color)
-            empty = centerImageinImage(empty, content)
-            return empty
-
-    @staticmethod
-    def getOptimizedImage(imagePath):
-        """
-        lädt das Bild von der Festplatte und Schneidet es in die Richtige größe
-        zoomt auf den Content
-        """
-        image = Image.open(imagePath)
-        image = image.convert("L")
-        return PreSizer.trim(image)
-
-    @staticmethod
-    def getDataFromImage(image):
-        # print("pixel: ", image.im.getpixel((0, 0)))
-        return list(map(lambda x: int(x / 255),
-                        image.getdata()))
-        # return image.histogram()
+def getDataFromImage(image):
+    # print("pixel: ", image.im.getpixel((0, 0)))
+    return list(map(lambda x: int(x / 255),
+                    image.getdata()))
+    # return image.histogram()
 
 
 def centerImageinImage(base, image):
@@ -103,6 +100,12 @@ def moveImage(file):
 
 
 def main():
+    """
+    Bei aufruf als Programm werden die Verzeichnisse gen_data und opt_data
+    generiert. gen_data wird falls vorhanden tatsächlich benutzt.
+    opt_data dient nur zum anschauen der Daten die verwendet werden.
+    """
+
     dataDir = "data"
     genDataDir = "gen_data"
     optDataDir = "opt_data"
@@ -138,7 +141,7 @@ def main():
                  if x.endswith(".jpg")]
 
         for index, image in enumerate(files):
-            img = PreSizer.getOptimizedImage(directory + "/" + image)
+            img = getOptimizedImage(directory + "/" + image)
             img.save("{}/{}".format(optDataDir, files[index]))
 
 if __name__ == '__main__':

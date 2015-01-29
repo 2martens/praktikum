@@ -1,5 +1,5 @@
 from multi_layer import MultiLayerNetwork
-from presizer import PreSizer
+import presizer as PreSizer
 import numpy as np
 import os
 import operator
@@ -39,6 +39,8 @@ class Recognizer(object):
 
         folderpaths - Eine liste von Ordnern
         """
+
+        self.outputFun("loading images...")
 
         dataSet = []
         for folderpath in folderpaths:
@@ -145,8 +147,8 @@ class Recognizer(object):
 
 def main():
     net = Recognizer(print)
-    # net.train(["data", "gen_data"], 0.1)
-    net.loadNetwork()
+    net.train(["data", "gen_data"], 0.1)
+    # net.loadNetwork()
 
     testDataDir = "testData"
 
@@ -173,8 +175,8 @@ def main():
     print("correct: {}   wrong:{}  --> {}%".
           format(correctCount, wrongCount, percent))
 
-    # if percent > 95:
-    #     net.saveNetwork()
+    if percent > 95:
+        net.saveNetwork()
 
 
 if __name__ == '__main__':
