@@ -31,8 +31,9 @@
 
 \begin{document}
 	\maketitle
+	\pagebreak
 	
-	\section{MultiLayerNetwork, multi\_layer.py}
+	\section{MultiLayerNetwork}
 		Bei der Klasse MultiLayerNetwork handelt es sich um ein einstellbares MLP. 
 		Zwingend angegeben werden muss nur der Parameter layout. Hierbei Handelt es sich 
 		um ein Tupel das jeweils die Größe der Layer Beschreibt. Bei (4, 3, 1) wird
@@ -59,7 +60,22 @@
 		Eingaben das gewünschte Ergebnis liefern oder die Anzahl der maximalen Trainingsschritte überschritten ist. 
 
 	\section{Presizer}
-		   
+		In presizer.py befinden sich eine Reihe von Funktion zur Vorverarbeitung von Bilddateien.
+		Die Funktion getOptimizedImage(imagePath) lädt die Bilddatei von der Festplatte und gibt ein auf dem Inhalt zugeschnittes 
+		Bild in der Größe 20x30 Pixel zurück. Hierbei handelt es sich dann immer noch um ein PIL Image, welches über die Funktion
+		getDataFromImage(image) in eine Liste aus Einsen und Nullen umgewandelt wird. Eine Null gibt an das es sich bei dem Pixel um 
+		Hindergrund handelt, und eine Eins das es sich um einen Teil des Symbols handelt.
+
+	\section{Recognizer} 
+		Der Recogizer erstellt ein einfaches MLP mit einer versteckten Schicht, mit dem die Symbole erkannt werden sollen.
+		Über die Methode train(self, folderpaths, learnrate, maxtrains) wird dieses trainiert. Bei folderpaths handelt es 
+		sich um eine Liste mit Verzeichnissen die Trainingsdaten enthalten. Alle .jpg Dateien in den Ordnern werden zum training 
+		verwendet. Der Anfangsbuchstabe der Datei muss dabei dem gewünschtem Ergebnis entsprechen.
+		Über getResult(imgagePath) oder getResults(imgagePath) werden die Ergebnisse für ein Bild ausgegeben. Ersteres gibt 
+		nur das Ergebnis als char zurück, während Letzteres die Top 3 mit ihren Wahrscheinlichkeiten zurück gibt.
+
+	\section{Gui}
+		Die Klasse Gui erstellt mittels Pygame eine Oberfläche zur Einfacheren interaktion mit dem Recognizer. 
 
 	
 \end{document}
