@@ -24,6 +24,8 @@ class Gui(object):
     def __init__(self):
         super(Gui, self).__init__()
 
+        # recognizer erstellen und showMsg als Ausgabefunktion anstatt print
+        # übergeben
         self.recognizer = Recognizer(self.showMsg)
 
         pygame.init()
@@ -51,6 +53,8 @@ class Gui(object):
         self.updateStatus()
 
     def getKeyMapSurface(self):
+        """ gibt den Surface zurück, der die Keybindings beschreibt """
+
         clearString = "c - Zurücksetzen"
         newImgString = "n - Bild speichern"
         trainString = "t - Trainieren"
@@ -75,6 +79,7 @@ class Gui(object):
         return surface
 
     def updateStatus(self):
+        """ Updatet das das aktuelle Ergebnis und den Trainingsstatus """
         self.msgArea.fill(Gui.MSG_BACKGROUND_COLOR)
 
         trained = self.font.render(
@@ -92,6 +97,7 @@ class Gui(object):
         self.msgArea.blit(trained, (10, 170))
 
     def showMsg(self, msg):
+        """ Zeigt msg auf dem Bildschirm an """
         self.handleEvents()
 
         self.drawArea.fill(Gui.BACKGROUND_COLOR)
@@ -101,6 +107,7 @@ class Gui(object):
         pygame.display.flip()
 
     def handleEvents(self):
+        """ Auf Benutzereingaben reagieren """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -180,6 +187,7 @@ class Gui(object):
             shutil.copyfile(Gui.IMAGE_NAME, dest)
 
     def run(self):
+        """ Anwendung laufen lassen """
         while self.running:
             self.handleEvents()
             self.screen.blit(self.drawArea, (0, 0))
