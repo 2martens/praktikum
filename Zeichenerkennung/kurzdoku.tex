@@ -32,6 +32,10 @@
 \begin{document}
 	\maketitle
 	\pagebreak
+
+	\noindent
+	Unser Quellcode ist aufgeteilt in 4 auf einander aufbauende Module. MultiLayerNetwork und Presizer bilden die 
+	Basis für den Recognizer, welcher die Basis für die Gui bildet.
 	
 	\section{MultiLayerNetwork}
 		Bei der Klasse MultiLayerNetwork handelt es sich um ein einstellbares MLP. 
@@ -48,7 +52,7 @@
 		auch einfach außerhalb der KLasse definiert werden können, wären dann beim import der Klasse jedoch nicht vorhanden.
 		Es können jedoch belibiege Funktionen als Parameter übergeben werden. Vorraussetzung ist jedoch das diese als Eingabe
 		ein Numpy-Array erwarten und auch wieder eins zurück geben. \\
-
+		\noindent
 		Über die Methode calc(input) wird die Eingabe über alle Layer vorwärts propagiert und die Ausgabe des letzten Layers 
 		zurück gegeben. Da unser Mlp mit einem Bias arbeitet, wird für jede Layereingabe noch eine eins angehangen.
 		Außerdem wird jede Layer ein und Ausgabe gespeichert, da diese fürs eventuelle zurück propagieren benötigt wird.
@@ -75,7 +79,12 @@
 		nur das Ergebnis als char zurück, während Letzteres die Top 3 mit ihren Wahrscheinlichkeiten zurück gibt.
 
 	\section{Gui}
-		Die Klasse Gui erstellt mittels Pygame eine Oberfläche zur Einfacheren interaktion mit dem Recognizer. 
+		Die Klasse Gui erstellt mittels Pygame eine Oberfläche zur Einfacheren interaktion mit dem Recognizer.
+		Auf der linken Hälfte wird einfach immer wenn die linke Maustaste gedrückt ist und sich die Maus bewegt eine Linie 
+		gezeichnet. Jedes mal wenn der Maus Button gelöst wird, wird der Recognizer mit dem Momentanen Fensterinhalt als
+		Eingabe Aufgerufen und die Ausgabe auf der rechten Seite angezeit. Dies und Tastatureingaben werden regelmäßig 
+		in der Methode handleEvents abgefragt.
+
 
 	
 \end{document}
