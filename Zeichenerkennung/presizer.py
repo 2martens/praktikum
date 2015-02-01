@@ -1,9 +1,12 @@
-#!/usr/bin/python
+# coding: utf8
 
 """
 Kümmert sich um die Vorverarbeitung der Bilder bevor sie dem
 Netz übergeben werden.
 """
+
+from __future__ import print_function
+from __future__ import division
 
 from PIL import Image, ImageChops
 from random import uniform
@@ -60,8 +63,8 @@ def centerImageinImage(base, image):
     """ base muss größer sein als image """
     bWidth, bHeight = base.size
     iWidht, iHeight = image.size
-    base.paste(image, (math.floor((bWidth - iWidht) / 2),
-                       math.floor((bHeight - iHeight) / 2)))
+    base.paste(image, (int((bWidth - iWidht) / 2),
+                       int((bHeight - iHeight) / 2)))
 
     return base
 

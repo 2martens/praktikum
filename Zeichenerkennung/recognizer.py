@@ -1,3 +1,8 @@
+# coding: utf8
+
+from __future__ import print_function
+from __future__ import division
+
 from multi_layer import MultiLayerNetwork
 import presizer as PreSizer
 import numpy as np

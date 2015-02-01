@@ -1,3 +1,8 @@
+# coding: utf8
+
+from __future__ import print_function
+from __future__ import division
+
 from recognizer import Recognizer
 import pygame
 import sys

@@ -1,10 +1,15 @@
+# coding: utf8
+
 """ Multi Layer Perceptron """
 
+from __future__ import print_function
+from __future__ import division
+
 import numpy as np
-import matplotlib.pyplot as plt
 import random
 import KTimage
 import os
+import errno
 
 
 class MultiLayerNetwork(object):
@@ -53,10 +58,18 @@ class MultiLayerNetwork(object):
             self.weights.append(start_weights)
 
         # sicherstellen das der Ordner für visualize vorhanden ist
+
         try:
             os.makedirs(MultiLayerNetwork.KTIMAGE_DATA)
-        except FileExistsError:
-            pass
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+
+        # FileExistsError erst ab python3
+        # try:
+        #     os.makedirs(MultiLayerNetwork.KTIMAGE_DATA)
+        # except FileExistsError:
+        #     pass
 
     def get_weights(self):
         return self.weights
@@ -263,11 +276,8 @@ if __name__ == '__main__':
         transfer_function=MultiLayerNetwork.sigmoid_function,
         last_transfer_function=MultiLayerNetwork.step_function)
 
-    errors = network.train_until_fit(training_data, 1000, 0.2, 500000)
+    network.train_until_fit(training_data, 1000, 0.2, 500000)
 
     for data, __ in training_data:
         result = network.calc(data)
         print("{} -> {}".format(data, result))
-
-    plt.plot(errors)
-    plt.show()
