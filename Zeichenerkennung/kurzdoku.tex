@@ -1,4 +1,4 @@
-\documentclass[a4paper]{article}
+\documentclass[10pt,a4paper,ngerman,oneside]{scrartcl}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Languages:
@@ -10,6 +10,8 @@
 \usepackage[utf8]{inputenc}
 \selectlanguage{ngerman}
 
+\parskip 12pt plus 1pt minus 1pt
+\parindent 0pt
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Meta informations:
@@ -34,56 +36,58 @@
 	\pagebreak
 
 	\noindent
-	Unser Quellcode ist aufgeteilt in 4 auf einander aufbauende Module. MultiLayerNetwork und Presizer bilden die 
-	Basis für den Recognizer, welcher die Basis für die Gui bildet.
+	Unser Quellcode ist aufgeteilt in 4 aufeinander aufbauende Module. MultiLayerNetwork und Presizer bilden die 
+	Basis für den Recognizer, welcher die Basis für die GUI bildet.
 	
 	\section{MultiLayerNetwork}
 		Bei der Klasse MultiLayerNetwork handelt es sich um ein einstellbares MLP. 
-		Zwingend angegeben werden muss nur der Parameter layout. Hierbei Handelt es sich 
-		um ein Tupel das jeweils die Größe der Layer Beschreibt. Bei (4, 3, 1) wird
-		dann Beispielsweise ein Netzwerk mit 4 Eingabe-, 3 Hidden- und einem Ausgabeneuron 
-		erzeugt. Der zweite Parameter **options nimmt alle weiteren Parameter die Übergeben
-		werden als ein Dictionionary auf. Parameter die ausgewertet werden sind u.A. transfer\_function
-		und last\_transfer\_function. Beide erwarten das ihnen eine Funktion übergeben wird, welche dann
-		jeweils als Aktivierungsfunktion zwischen den verschiedenen Layern verwendet wird.
-		Innerhalb der Klasse MultiLayerNetwork wurden bereits einige Transferfunktionen definiert,
-		wie etwa die sigmoid\_function welche verwendet werden können. Diese sind dabei als static definiert
-		damit sie bereits der \_\_init\_\_ Methode übergeben werden können. Alternativ hätten diese Funktionen
-		auch einfach außerhalb der KLasse definiert werden können, wären dann beim import der Klasse jedoch nicht vorhanden.
-		Es können jedoch belibiege Funktionen als Parameter übergeben werden. Vorraussetzung ist jedoch das diese als Eingabe
-		ein Numpy-Array erwarten und auch wieder eins zurück geben. \\
-		\noindent
-		Über die Methode calc(input) wird die Eingabe über alle Layer vorwärts propagiert und die Ausgabe des letzten Layers 
-		zurück gegeben. Da unser Mlp mit einem Bias arbeitet, wird für jede Layereingabe noch eine eins angehangen.
-		Außerdem wird jede Layer ein und Ausgabe gespeichert, da diese fürs eventuelle zurück propagieren benötigt wird.
-		Mit der Methode train, die eine Eingabe und das gewünschte Ergebnis erwartet, wird das Netz trainiert.
-		Zuerst wird dafür calc Aufgerufen und dann mittels dem gewünschtem Ergebnis und den gespeicherten Gewichten der
+		Nur der Parameter \texttt{layout} muss zwingend angegeben werden. Hierbei Handelt es sich 
+		um ein Tupel das jeweils die Größe der Layer beschreibt. Bei (4, 3, 1) wird
+		dann beispielsweise ein Netzwerk mit 4 Eingabe- und 3 Hiddenneuronen sowie einem Ausgabeneuron 
+		erzeugt. Der zweite Parameter \texttt{**options} nimmt alle weiteren Parameter, die übergeben
+		werden, als ein Dictionary auf. 
+
+		Die Parameter \texttt{transfer\_function} und \texttt{last\_transfer\_function} werden ausgewertet und erwarten eine
+		Funktion, die dann jeweils als Aktivierungsfunktion zwischen den verschiedenen Layern verwendet wird.
+		
+		Innerhalb der Klasse MultiLayerNetwork wurden bereits einige Transferfunktionen wie z.B. die \texttt{sigmoid\_function} definiert.
+		Sie sind als static definiert, damit sie der \texttt{\_\_init\_\_} Methode übergeben werden können. Alternativ hätten diese
+		Funktionen jedoch auch außerhalb der Klasse definiert werden können. Allerdings wären sie dann beim Import der Klasse nicht
+		vorhanden. Es können jedoch auch beliebige andere Funktionen als Parameter übergeben werden, solange sie als Eingabe ein Numpy-Array
+		erwarten und auch wieder eines zurückgeben.
+
+		Über die Methode \texttt{calc(input)} wird die Eingabe über alle Layer vorwärts propagiert und die Ausgabe des letzten Layers 
+		zurückgegeben. Da unser MLP mit einem Bias arbeitet, wird für jede Layereingabe noch eine eins angehangen.
+		Außerdem wird für jedem Layer Ein- und Ausgabe gespeichert, da diese für die eventuelle Rückwärtspropagation benötigt wird.
+		Mit der Methode \texttt{train}, die eine Eingabe und das gewünschte Ergebnis erwartet, wird das Netz trainiert.
+		Zuerst wird dafür \texttt{calc} aufgerufen und dann mittels dem gewünschtem Ergebnis und den gespeicherten Gewichten der
 		Fehler zurückpropagiert. 
-		Die Methode train\_until\_fit ermöglicht es gleich ganze Datensätze zu trainieren. Sie erwartet ein Array aus 
+		Die Methode \texttt{train\_until\_fit} ermöglicht es ganze Datensätze zu trainieren. Sie erwartet ein Array aus 
 		Paaren von Eingabe und gewünschter Ausgabe. Mit diesen Daten wird das Netz dann so lange trainiert, bis alle
-		Eingaben das gewünschte Ergebnis liefern oder die Anzahl der maximalen Trainingsschritte überschritten ist. 
+		Eingaben das gewünschte Ergebnis liefern oder die Anzahl der maximalen Trainingsschritte erreicht ist. 
 
 	\section{Presizer}
 		In presizer.py befinden sich eine Reihe von Funktion zur Vorverarbeitung von Bilddateien.
-		Die Funktion getOptimizedImage(imagePath) lädt die Bilddatei von der Festplatte und gibt ein auf dem Inhalt zugeschnittes 
+		Die Funktion \texttt{getOptimizedImage(imagePath)} lädt die Bilddatei von der Festplatte und gibt ein auf den Inhalt zugeschnittenes 
 		Bild in der Größe 20x30 Pixel zurück. Hierbei handelt es sich dann immer noch um ein PIL Image, welches über die Funktion
-		getDataFromImage(image) in eine Liste aus Einsen und Nullen umgewandelt wird. Eine Null gibt an das es sich bei dem Pixel um 
-		Hindergrund handelt, und eine Eins das es sich um einen Teil des Symbols handelt.
+		\texttt{getDataFromImage(image)} in eine Liste aus Einsen und Nullen umgewandelt wird. Eine 0 gibt an, dass es sich bei dem Pixel um 
+		Hindergrund handelt, wohingegen eine 1 bedeutet, dass es ein Teil des Symbols ist.
 
 	\section{Recognizer} 
-		Der Recogizer erstellt ein einfaches MLP mit einer versteckten Schicht, mit dem die Symbole erkannt werden sollen.
-		Über die Methode train(self, folderpaths, learnrate, maxtrains) wird dieses trainiert. Bei folderpaths handelt es 
-		sich um eine Liste mit Verzeichnissen die Trainingsdaten enthalten. Alle .jpg Dateien in den Ordnern werden zum training 
+		Der Recogizer erstellt ein einfaches MLP mit einer versteckten Schicht, welches die Symbole erkennen soll.
+		Über die Methode \texttt{train(self, folderpaths, learnrate, maxtrains)} wird dieses MLP trainiert. Bei \texttt{folderpaths} handelt es 
+		sich um eine Liste mit Verzeichnissen, die Trainingsdaten enthalten. Alle .jpg Dateien in den Ordnern werden zum Training 
 		verwendet. Der Anfangsbuchstabe der Datei muss dabei dem gewünschtem Ergebnis entsprechen.
-		Über getResult(imgagePath) oder getResults(imgagePath) werden die Ergebnisse für ein Bild ausgegeben. Ersteres gibt 
-		nur das Ergebnis als char zurück, während Letzteres die Top 3 mit ihren Wahrscheinlichkeiten zurück gibt.
+		Mit \texttt{getResult(imgagePath)} bzw. \texttt{getResults(imgagePath)} werden die Ergebnisse für ein Bild ausgegeben. Die erste der beiden
+		Funktionen gibt das Ergebnis als char zurück, während die zweite der Funktionen die drei wahrscheinlichsten Ergebnisse zusammen mit ihren
+		Wahrscheinlichkeiten zurückgibt.
 
-	\section{Gui}
-		Die Klasse Gui erstellt mittels Pygame eine Oberfläche zur Einfacheren interaktion mit dem Recognizer.
-		Auf der linken Hälfte wird einfach immer wenn die linke Maustaste gedrückt ist und sich die Maus bewegt eine Linie 
-		gezeichnet. Jedes mal wenn der Maus Button gelöst wird, wird der Recognizer mit dem Momentanen Fensterinhalt als
-		Eingabe Aufgerufen und die Ausgabe auf der rechten Seite angezeit. Dies und Tastatureingaben werden regelmäßig 
-		in der Methode handleEvents abgefragt.
+	\section{GUI}
+		Die Klasse GUI erstellt mittels Pygame eine Oberfläche zur einfacheren Interaktion mit dem Recognizer.
+		Auf der linken Hälfte wird immer, wenn die linke Maustaste gedrückt ist und sich die Maus bewegt, eine Linie 
+		gezeichnet. Jedes Mal wenn der Mausbutton gelöst wird, wird der Recognizer mit dem momentanen Fensterinhalt als
+		Eingabe aufgerufen und die Ausgabe auf der rechten Seite angezeigt. 
+		Das Mausverhalten und Tastatureingaben werden regelmäßig in der Methode handleEvents abgefragt.
 
 
 	
